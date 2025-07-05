@@ -1,17 +1,18 @@
+// CÓDIGO CORRECTO PARA App.tsx CUANDO ESTÁ DENTRO DE SRC
 import React from 'react';
-import { MAX_PRICE } from './src/constants';
-import { Header } from './src/components/Header';
-import FiltersDesktop from './src/components/FiltersDesktop';
-import ProductGrid from './src/components/ProductGrid';
-import WhatsAppButton from './src/components/WhatsAppButton';
-import Notification from './src/components/Notification';
-import ProductModal from './src/components/ProductModal';
-import CartModal from './src/components/CartModal';
-import FiltersMobileModal from './src/components/FiltersMobileModal';
-import { useNotifications } from './src/hooks/useNotifications';
-import { useCart } from './src/hooks/useCart';
-import { useProducts } from './src/hooks/useProducts';
-import { useUI } from './src/hooks/useUI';
+import { MAX_PRICE } from './constants';
+import { Header } from './components/Header';
+import FiltersDesktop from './components/FiltersDesktop';
+import ProductGrid from './components/ProductGrid';
+import WhatsAppButton from './components/WhatsAppButton';
+import Notification from './components/Notification';
+import ProductModal from './components/ProductModal';
+import CartModal from './components/CartModal';
+import FiltersMobileModal from './components/FiltersMobileModal';
+import { useNotifications } from './hooks/useNotifications';
+import { useCart } from './hooks/useCart';
+import { useProducts } from './hooks/useProducts';
+import { useUI } from './hooks/useUI';
 
 export const App: React.FC = () => {
   const { notifications, addNotification, removeNotification } = useNotifications();
