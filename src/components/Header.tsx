@@ -1,6 +1,7 @@
-
 import React, { useEffect, useRef } from 'react';
-import { SearchIcon, FilterIcon, ShoppingCartIcon, WhatsAppIcon, SparklesIcon, TagIcon, ClockIcon, ShieldCheckIcon, LiluTecnoLogoIcon } from './Icons.tsx';
+// 1. IMPORTACIONES MODIFICADAS: Añadido MenuIcon y tu logo, quitado FilterIcon y el logo antiguo.
+import { SearchIcon, MenuIcon, ShoppingCartIcon, WhatsAppIcon, SparklesIcon, TagIcon, ClockIcon, ShieldCheckIcon } from './Icons.tsx';
+import liluLogo from '../assets/images/lilutecnologo.png'; 
 import { WHATSAPP_NUMBER_LINK_BASE } from '../constants.ts';
 
 interface HeaderProps {
@@ -107,9 +108,12 @@ export const Header: React.FC<HeaderProps> = ({
         <div className="flex flex-col gap-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
-              <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center shadow-lg">
-                <LiluTecnoLogoIcon className="text-orange-500 w-8 h-8" />
-              </div>
+              {/* 2. LOGO MODIFICADO: Se usa la etiqueta <img> con tu logo importado. */}
+              <img 
+                src={liluLogo} 
+                alt="Logo de LiluTecno" 
+                className="h-14 w-auto" // Puedes ajustar el tamaño aquí (ej: h-12, h-16)
+              />
               <div className="flex flex-col">
                 <h1 className="text-2xl md:text-3xl font-black text-white drop-shadow-lg">LiluTecno</h1>
               </div>
@@ -118,9 +122,10 @@ export const Header: React.FC<HeaderProps> = ({
               <button
                 onClick={onMobileFiltersClick}
                 className="lg:hidden p-2 bg-white/20 border border-white/25 rounded-xl text-white backdrop-blur-sm hover:bg-white/30 transition-colors"
-                aria-label="Abrir filtros"
+                aria-label="Abrir menú y filtros"
               >
-                <FilterIcon className="h-6 w-6" />
+                {/* 3. ICONO DE FILTRO MODIFICADO: Se usa MenuIcon en lugar de FilterIcon. */}
+                <MenuIcon className="h-6 w-6" />
               </button>
               <button
                 onClick={onCartClick}
