@@ -9,7 +9,8 @@ const firebaseConfig = {
   projectId: "lilutecno-pagina-web",
   storageBucket: "lilutecno-pagina-web.appspot.com",
   messagingSenderId: "907793758364",
-  appId: "1:907793758364:web:ba94a732c669cbee70d559"
+  appId: "1:907793758364:web:ba94a732c669cbee70d559",
+  measurementId: "G-TX10F634LP"
 };
 
 // Inicializar Firebase
