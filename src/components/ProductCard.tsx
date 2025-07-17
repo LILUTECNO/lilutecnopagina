@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom'; // Importar Link
 import { Product } from '../types.ts';
 import { formatPrice } from '../utils/formatters.ts';
 import { WHATSAPP_NUMBER_LINK_BASE } from '../constants.ts';
@@ -6,11 +7,10 @@ import { ShoppingCartIcon, WhatsAppIconSmall } from './Icons.tsx';
 
 interface ProductCardProps {
   product: Product;
-  onProductClick: (product: Product) => void;
   onAddToCart: (product: Product) => void;
 }
 
-const ProductCard: React.FC<ProductCardProps> = ({ product, onProductClick, onAddToCart }) => {
+const ProductCard: React.FC<ProductCardProps> = ({ product, onAddToCart }) => {
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
@@ -37,18 +37,16 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onProductClick, onAd
     const msg = `🛍️ *¡Hola LiluTecno!* 🛍️\n\nEstoy interesado en el siguiente producto:\n\n*Producto:* ${p.name}\n*Código:* ${p.id}\n\nQuisiera confirmar disponibilidad y métodos de pago. ¡Gracias! 🚀`;
     return `${WHATSAPP_NUMBER_LINK_BASE}?text=${encodeURIComponent(msg)}`;
   };
-
-  const handleCardClick = () => {
-    onProductClick(product);
-  };
   
   const handleAddToCartClick = (e: React.MouseEvent) => {
     e.stopPropagation(); // Prevent card click when clicking button
+    e.preventDefault(); // Prevent default link navigation
     onAddToCart(product);
   };
 
   const handleWhatsAppClick = (e: React.MouseEvent) => {
     e.stopPropagation(); // Prevent card click
+    e.preventDefault(); // Prevent default link navigation
     window.open(generateWhatsAppMessageForProduct(product), '_blank', 'noopener,noreferrer');
   };
 
@@ -56,8 +54,8 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onProductClick, onAd
 
 
   return (
-    <div
-      onClick={handleCardClick}
+    <Link
+      to={`/product/${product.id}`}
       className={`bg-white rounded-2xl shadow-lg flex flex-col group cursor-pointer transition-all duration-300 ease-out hover:shadow-xl hover:-translate-y-2 
                   ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}
     >
@@ -126,7 +124,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onProductClick, onAd
           )}
         </div>
       </div>
-    </div>
+    </Link>
   );
 };
 

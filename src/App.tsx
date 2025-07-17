@@ -6,17 +6,14 @@ import FiltersDesktop from './components/FiltersDesktop';
 import ProductGrid from './components/ProductGrid';
 import WhatsAppButton from './components/WhatsAppButton';
 import Notification from './components/Notification';
-import ProductModal from './components/ProductModal';
 import CartModal from './components/CartModal';
 import FiltersMobileModal from './components/FiltersMobileModal';
-import { useNotifications } from './hooks/useNotifications';
-import { useCart } from './hooks/useCart';
 import { useProducts } from './hooks/useProducts';
 import { useUI } from './hooks/useUI';
+import { useCartContext } from './context/CartContext'; // Importar useCartContext
 
 export const App: React.FC = () => {
-  const { notifications, addNotification, removeNotification } = useNotifications();
-  const { cart, addToCart, removeFromCart, updateCartQuantity, clearCart, totalCartItems } = useCart(addNotification);
+  const { notifications, addNotification, removeNotification, cart, addToCart, removeFromCart, updateCartQuantity, clearCart, totalCartItems } = useCartContext(); // Usar useCartContext
   const {
     filteredProducts,
     categories,
@@ -28,12 +25,9 @@ export const App: React.FC = () => {
     totalAvailableCount
   } = useProducts();
   const {
-    selectedProduct,
     isCartModalOpen,
     isMobileFiltersModalOpen,
     isHeaderVisible,
-    onProductClick,
-    closeProductModal,
     openCartModal,
     closeCartModal,
     openMobileFiltersModal,
@@ -65,7 +59,6 @@ export const App: React.FC = () => {
           />
           <ProductGrid
             products={filteredProducts}
-            onProductClick={onProductClick}
             onAddToCart={addToCart}
           />
         </div>
@@ -76,13 +69,6 @@ export const App: React.FC = () => {
         <p className="text-sm text-gray-400">Tecnología Mundial a Tu Alcance!</p>
       </footer>
 
-      {selectedProduct && (
-        <ProductModal
-          product={selectedProduct}
-          onClose={closeProductModal}
-          onAddToCart={addToCart}
-        />
-      )}
       {isCartModalOpen && (
         <CartModal
           cart={cart}

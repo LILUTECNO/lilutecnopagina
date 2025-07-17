@@ -1,11 +1,20 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import { App } from './App' // Asegúrate de que App se exporta como 'export const App'
-import './index.css' // Esta línea importa tus estilos principales
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { App } from './App'
+import ProductPage from './pages/ProductPage'
+import { CartProvider } from './context/CartContext' // Importar CartProvider
+import './index.css'
 
-// Vite se encarga de encontrar el 'root' por ti
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <App />
+    <BrowserRouter>
+      <CartProvider> {/* Envolver con CartProvider */}
+        <Routes>
+          <Route path="/" element={<App />} />
+          <Route path="/product/:productId" element={<ProductPage />} />
+        </Routes>
+      </CartProvider>
+    </BrowserRouter>
   </React.StrictMode>,
 )
