@@ -6,7 +6,9 @@ import { Product } from '../types';
 import { formatPrice } from '../utils/formatters';
 import { CheckCircleIcon, XCircleIcon, ShoppingCartIcon, FireIcon, HdmiIcon, BluetoothIcon, ArrowLeftIcon } from '../components/Icons'; // Importar ArrowLeftIcon
 import { Header } from '../components/Header';
-import { useCart } from '../hooks/useCart';
+import { useProducts } from '../hooks/useProducts';
+import { useUI } from '../hooks/useUI';
+import { useCartContext } from '../context/CartContext';
 import { useNotifications } from '../hooks/useNotifications';
 
 const ProductPage: React.FC = () => {
@@ -17,8 +19,19 @@ const ProductPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [mainImage, setMainImage] = useState<string>('');
 
-  const { addNotification } = useNotifications();
-  const { addToCart } = useCart(addNotification);
+  const { addNotification, addToCart, cart, totalCartItems } = useCartContext();
+  const {
+    categories,
+    filters,
+    handleSetFilters,
+    productsOnOfferCount,
+    totalAvailableCount
+  } = useProducts();
+  const {
+    isHeaderVisible,
+    openCartModal,
+    openMobileFiltersModal
+  } = useUI();
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -30,7 +43,6 @@ const ProductPage: React.FC = () => {
       try {
         const docRef = doc(db, 'products', productId);
         const docSnap = await getDoc(docRef);
-
         if (docSnap.exists()) {
           const productData = { id: docSnap.id, ...(docSnap.data() as Omit<Product, 'id'>) };
           setProduct(productData);
@@ -39,21 +51,20 @@ const ProductPage: React.FC = () => {
           setError('Producto no encontrado.');
         }
       } catch (err) {
-        console.error('Error fetching product:', err);
         setError('Error al cargar el producto.');
       } finally {
         setLoading(false);
       }
     };
-
     fetchProduct();
+    // Mejorar experiencia: scroll al top al cargar producto
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }, [productId]);
 
   const techFeatures = useMemo(() => {
     if (!product) return [];
     const features: { name: string; icon: React.FC<any> }[] = [];
     const featureString = product.features.join(' ').toLowerCase();
-
     if (featureString.includes('hdmi')) {
       features.push({ name: 'HDMI', icon: HdmiIcon });
     }
@@ -68,7 +79,8 @@ const ProductPage: React.FC = () => {
       <div className="flex flex-col min-h-screen bg-gray-50">
         <Header />
         <main className="container mx-auto px-4 py-8 flex-grow flex items-center justify-center">
-          <p className="text-lg text-gray-700">Cargando producto...</p>
+          <span className="sr-only">Cargando producto...</span>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500 mx-auto"></div>
         </main>
       </div>
     );
@@ -79,10 +91,10 @@ const ProductPage: React.FC = () => {
       <div className="flex flex-col min-h-screen bg-gray-50">
         <Header />
         <main className="container mx-auto px-4 py-8 flex-grow flex flex-col items-center justify-center text-center">
-          <p className="text-lg text-red-600">Error: {error}</p>
+          <p className="text-lg text-red-600" role="alert">Error: {error}</p>
           <button
             onClick={() => navigate('/')}
-            className="mt-4 px-6 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors"
+            className="mt-4 px-6 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors focus:outline-none focus:ring-2 focus:ring-orange-400"
           >
             Volver al inicio
           </button>
@@ -99,7 +111,7 @@ const ProductPage: React.FC = () => {
           <p className="text-lg text-gray-700">Producto no disponible.</p>
           <button
             onClick={() => navigate('/')}
-            className="mt-4 px-6 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors"
+            className="mt-4 px-6 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors focus:outline-none focus:ring-2 focus:ring-orange-400"
           >
             Volver al inicio
           </button>
@@ -112,12 +124,10 @@ const ProductPage: React.FC = () => {
   const hasOffer = product.old_price && product.old_price > product.price;
   
   const handleAddToCart = () => {
-    console.log("Attempting to add product to cart:", product);
     if (product) {
       addToCart(product);
       addNotification(`¡${product.name} añadido al carrito!`, 'success');
     } else {
-      console.error("Product is null or undefined, cannot add to cart.");
       addNotification("Error: No se pudo añadir el producto al carrito.", 'error');
     }
   };
@@ -126,12 +136,21 @@ const ProductPage: React.FC = () => {
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-50">
-      <Header />
-      <main className="container mx-auto px-4 py-0 flex-grow"> {/* Removed all vertical padding from main */}
-        <div className="bg-white w-full px-4 sm:px-6 pt-0 pb-4"> {/* Adjusted padding for better spacing */}
+      <Header
+        isHeaderVisible={isHeaderVisible}
+        searchTerm={filters.searchTerm}
+        onSearchChange={(term) => handleSetFilters({ searchTerm: term })}
+        totalCartItems={totalCartItems}
+        onCartClick={openCartModal}
+        onMobileFiltersClick={openMobileFiltersModal}
+        filteredCount={productsOnOfferCount}
+        totalAvailableCount={totalAvailableCount}
+      />
+      <main className="container mx-auto px-2 sm:px-4 py-0 flex-grow">
+        <section className="w-full max-w-5xl bg-white rounded-2xl shadow-lg p-2 sm:p-4 md:p-6 flex flex-col md:flex-row gap-4 md:gap-8 mt-2 md:mt-6">
           <button
             onClick={() => navigate(-1)}
-            className="mb-4 mt-0 pt-0 flex items-center text-gray-600 hover:text-orange-500 transition-colors"
+            className="mb-4 mt-0 pt-0 flex items-center text-gray-600 hover:text-orange-500 transition-colors focus:outline-none focus:ring-2 focus:ring-orange-400"
             aria-label="Volver a la lista de productos"
           >
             <ArrowLeftIcon className="h-5 w-5 mr-2" />
@@ -146,10 +165,13 @@ const ProductPage: React.FC = () => {
                   src={mainImage}
                   alt={product.name}
                   className="w-full h-full object-contain"
+                  loading="lazy"
+                  decoding="async"
                   onError={(e) => (e.currentTarget.src = placeholderImage)}
+                  tabIndex={0}
+                  aria-label={`Imagen principal de ${product.name}`}
                 />
               </div>
-              
               {product.images.length > 1 && (
                 <div className="thumbnail-gallery flex items-center gap-2 mt-4 overflow-x-auto pb-2">
                   {product.images.map((img, idx) => (
@@ -161,18 +183,20 @@ const ProductPage: React.FC = () => {
                       className={`w-16 h-16 object-cover rounded-md cursor-pointer border-2 transition-all duration-200
                         ${mainImage === img ? 'border-orange-500 shadow-md scale-105' : 'border-transparent hover:border-orange-300'}`}
                       onClick={() => setMainImage(img)}
+                      onKeyDown={(e) => { if (e.key === 'Enter') setMainImage(img); }}
+                      tabIndex={0}
+                      aria-label={`Seleccionar miniatura ${idx + 1} de ${product.name}`}
                       onError={(e) => (e.currentTarget.src = `https://picsum.photos/100/100?random=${product.id}${idx}`)}
                     />
                   ))}
                 </div>
               )}
-              
-               {techFeatures.length > 0 && (
+              {techFeatures.length > 0 && (
                 <div className="mt-4 pt-4 border-t border-gray-200 flex items-center justify-center gap-x-6 gap-y-2 text-gray-500 flex-wrap">
                   {techFeatures.map((feature) => (
                     <div key={feature.name} className="flex flex-col items-center gap-1" title={feature.name}>
-                       <feature.icon className="h-8 w-8 text-gray-700"/>
-                       <span className="text-xs font-semibold">{feature.name}</span>
+                      <feature.icon className="h-8 w-8 text-gray-700" />
+                      <span className="text-xs font-semibold">{feature.name}</span>
                     </div>
                   ))}
                 </div>
@@ -243,7 +267,7 @@ const ProductPage: React.FC = () => {
               </div>
             </div>
           </div>
-        </div>
+        </section>
       </main>
       <footer className="bg-gray-800 text-white text-center py-6">
         <p>&copy; {new Date().getFullYear()} LiluTecno. Todos los derechos reservados.</p>
