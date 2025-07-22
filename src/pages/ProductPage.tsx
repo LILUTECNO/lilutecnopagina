@@ -254,16 +254,31 @@ const ProductPage: React.FC = () => {
               )}
               
               {/* Action Buttons */}
-              <div className="mt-auto pt-6 space-y-3">
+              <div className="mt-auto pt-6 space-y-3 flex flex-col gap-3">
                 {isAvailable && (
-                    <button
-                        onClick={handleAddToCart}
-                        className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-bold py-3 px-4 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-orange-400 focus:ring-opacity-75"
-                    >
-                        <ShoppingCartIcon className="w-5 h-5" />
-                        Agregar al Carrito
-                    </button>
+                  <button
+                    onClick={handleAddToCart}
+                    className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-bold py-3 px-4 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-orange-400 focus:ring-opacity-75"
+                  >
+                    <ShoppingCartIcon className="w-5 h-5" />
+                    Agregar al Carrito
+                  </button>
                 )}
+                {/* Botón WhatsApp con link del producto */}
+                <button
+                  onClick={() => {
+                    const url = window.location.href;
+                    const msg = `Tengo una pregunta sobre este producto: ${url}`;
+                    const wa = `https://wa.me/573163026089?text=${encodeURIComponent(msg)}`;
+                    window.open(wa, '_blank', 'noopener,noreferrer');
+                  }}
+                  className="w-full flex items-center justify-center gap-2 bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-4 rounded-lg shadow-md hover:shadow-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-green-400"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 12c0 5.385 4.365 9.75 9.75 9.75.978 0 1.93-.144 2.828-.412.267-.08.553-.02.753.174l2.316 2.316a.75.75 0 0 0 1.28-.53v-3.068a.75.75 0 0 1 .22-.53A9.708 9.708 0 0 0 21.75 12c0-5.385-4.365-9.75-9.75-9.75S2.25 6.615 2.25 12Z" />
+                  </svg>
+                  Preguntar por WhatsApp
+                </button>
               </div>
             </div>
           </div>
