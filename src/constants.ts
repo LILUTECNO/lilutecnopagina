@@ -1,7 +1,7 @@
 import { FiltersState } from './types';
 
 export const WOMPI_PAYMENT_LINK_BASE = "https://checkout.wompi.co/l/VPOS_sUdpQY";
-export const WHATSAPP_NUMBER_LINK_BASE = 'https://wa.link/4fo4p4'; // Replace with actual business WhatsApp link
+export const WHATSAPP_NUMBER_LINK_BASE = 'https://wa.me/573163026089'; // WhatsApp directo LiluTecno
 export const MAX_PRICE = 5000000;
 
 export const INITIAL_FILTERS: FiltersState = {
