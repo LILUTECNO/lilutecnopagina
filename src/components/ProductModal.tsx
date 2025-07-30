@@ -171,7 +171,7 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, onClose, onAddToCa
                             ? 'bg-blue-500 hover:bg-blue-600 text-white focus:ring-blue-400' 
                             : 'bg-green-500 hover:bg-green-600 text-white focus:ring-green-400'}`}
                 >
-                    {isAvailable ? '💳 PAGAR AHORA (WOMPI)' : <><WhatsAppIcon className="w-5 h-5" /> CONSULTAR POR WHATSAPP</>}
+                    {isAvailable ? '💳 Pagar ahora' : <><WhatsAppIcon className="w-5 h-5" /> CONSULTAR POR WHATSAPP</>}
                 </a>
               </div>
             </div>

@@ -163,7 +163,7 @@ const CartModal: React.FC<CartModalProps> = ({
                     onClick={() => addNotification('Redirigiendo a la pasarela de pago...')}
                     className="w-full flex items-center justify-center gap-2 bg-blue-500 hover:bg-blue-600 text-white text-lg font-bold py-3 px-4 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-0.5"
                 >
-                    💳 PAGAR CON WOMPI
+                    💳 PAGAR
                 </a>
                 <button onClick={() => setShowCheckoutForm(true)} className="w-full bg-green-500 hover:bg-green-600 text-white text-lg font-bold py-3 px-4 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-0.5">
                   🛒 FINALIZAR POR WHATSAPP
