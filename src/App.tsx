@@ -1,4 +1,3 @@
-// CÓDIGO CORRECTO PARA App.tsx CUANDO ESTÁ DENTRO DE SRC
 import React from 'react';
 import { MAX_PRICE } from './constants';
 import { Header } from './components/Header';
@@ -10,10 +9,10 @@ import CartModal from './components/CartModal';
 import FiltersMobileModal from './components/FiltersMobileModal';
 import { useProducts } from './hooks/useProducts';
 import { useUI } from './hooks/useUI';
-import { useCartContext } from './context/CartContext'; // Importar useCartContext
+import { useCartContext } from './context/CartContext';
 
 export const App: React.FC = () => {
-  const { notifications, addNotification, removeNotification, cart, addToCart, removeFromCart, updateCartQuantity, clearCart, totalCartItems } = useCartContext(); // Usar useCartContext
+  const { notifications, addNotification, removeNotification, cart, addToCart, removeFromCart, updateCartQuantity, clearCart, totalCartItems } = useCartContext();
   const {
     filteredProducts,
     categories,
@@ -36,6 +35,7 @@ export const App: React.FC = () => {
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-50">
+      <script src="https://checkout.wompi.co/widget.js"></script>
       <Header
         isHeaderVisible={isHeaderVisible}
         searchTerm={filters.searchTerm}

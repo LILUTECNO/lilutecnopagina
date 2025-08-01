@@ -143,3 +143,10 @@ export const ArrowLeftIcon: React.FC<IconProps> = (props) => (
     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
   </svg>
 );
+
+export const GiftIcon: React.FC<IconProps> = (props) => (
+    <svg fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24" {...props}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M21 11.25v8.25a2.25 2.25 0 01-2.25 2.25H5.25a2.25 2.25 0 01-2.25-2.25v-8.25M12 4.875l-2.625 5.25h5.25L12 4.875z" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M12 15.75v5.25m-3.75-5.25v5.25m7.5-5.25v5.25M3 11.25h18" />
+    </svg>
+);
