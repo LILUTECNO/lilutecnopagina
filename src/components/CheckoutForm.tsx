@@ -1,8 +1,8 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { CartItem } from '../types';
 import { db } from '../firebaseConfig';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
-import { CheckCircleIcon, GiftIcon } from './Icons'; // Suponiendo que tienes un ícono de regalo
+import { CheckCircleIcon, GiftIcon } from './Icons';
 
 declare const WidgetCheckout: any;
 
@@ -26,6 +26,18 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({ cart, cartTotal, onBackToCa
   const [coupon, setCoupon] = useState('');
   const [couponApplied, setCouponApplied] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
+
+  // Efecto para auto-seleccionar el envío basado en la ciudad
+  useEffect(() => {
+    const cityNormalized = customer.city.trim().toLowerCase();
+    if (cityNormalized === 'bogota' || cityNormalized === 'bogotá') {
+      setShippingOption('BOGOTA');
+    } else if (cityNormalized) {
+      setShippingOption('OTHER');
+    } else {
+      setShippingOption('');
+    }
+  }, [customer.city]);
 
   const shippingCost = useMemo(() => {
     if (couponApplied || !shippingOption) return 0;
