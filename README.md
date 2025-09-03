@@ -31,7 +31,20 @@ This is a modern, responsive, and high-performance e-commerce front-end built wi
     ```
 
 3.  **Environment Variables:**
-    This project does not require any environment variables to run locally. The previous `GEMINI_API_KEY` is no longer necessary for the current feature set.
+    This project connects to a Firebase backend. For the application to run, you must create a `.env` file in the root of the project directory.
+
+    Copy the following template into your `.env` file and replace the values with your actual Firebase project credentials.
+
+    ```env
+    # Firebase Configuration
+    VITE_FIREBASE_API_KEY="YOUR_API_KEY"
+    VITE_FIREBASE_AUTH_DOMAIN="YOUR_AUTH_DOMAIN"
+    VITE_FIREBASE_PROJECT_ID="YOUR_PROJECT_ID"
+    VITE_FIREBASE_STORAGE_BUCKET="YOUR_STORAGE_BUCKET"
+    VITE_FIREBASE_MESSAGING_SENDER_ID="YOUR_MESSAGING_SENDER_ID"
+    VITE_FIREBASE_APP_ID="YOUR_APP_ID"
+    VITE_FIREBASE_MEASUREMENT_ID="YOUR_MEASUREMENT_ID"
+    ```
 
 4.  **Run the development server:**
     ```bash
