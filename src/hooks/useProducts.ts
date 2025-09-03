@@ -1,6 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { collection, getDocs } from 'firebase/firestore';
-import { db } from '../firebaseConfig';
+import apiClient from '../services/api'; // Importamos nuestro cliente de API
 import { Product, FiltersState } from '../types';
 import { INITIAL_FILTERS } from '../constants';
 
@@ -11,31 +10,19 @@ export const useProducts = () => {
   const [filters, setFilters] = useState<FiltersState>(INITIAL_FILTERS);
   const [loading, setLoading] = useState(true);
 
+  // La lógica de fetching ahora usa nuestro apiClient
   const fetchProducts = useCallback(async () => {
     setLoading(true);
     try {
-      const productsCollection = collection(db, 'products');
-      const productSnapshot = await getDocs(productsCollection);
-      const productList: Product[] = productSnapshot.docs.map(doc => {
-        const data = doc.data();
-        return {
-          id: doc.id,
-          name: data.name,
-          price: data.price,
-          old_price: data.old_price || null,
-          category: data.category,
-          stock: data.stock,
-          summary: data.summary,
-          images: Array.isArray(data.images) ? data.images : [],
-          features: Array.isArray(data.features) ? data.features : [],
-        };
-      });
+      // Hacemos una petición GET al endpoint de productos del nuevo backend
+      const response = await apiClient.get('/products');
+      const productList: Product[] = response.data; // Asumimos que la API devuelve un array de productos
 
       setAllProducts(productList);
       const uniqueCategories = [...new Set(productList.map(p => p.category))].sort();
       setCategories(uniqueCategories);
     } catch (error) {
-      console.error("Error fetching products from Firebase:", error);
+      console.error("Error fetching products from API:", error);
     } finally {
       setLoading(false);
     }
@@ -45,6 +32,7 @@ export const useProducts = () => {
     fetchProducts();
   }, [fetchProducts]);
 
+  // El resto de la lógica de filtrado y manejo de estado no necesita cambios
   const applyFilters = useCallback(() => {
     let tempProducts = [...allProducts];
     const { searchTerm, category, priceRange, stockOnly } = filters;
@@ -66,7 +54,6 @@ export const useProducts = () => {
 
     setFilteredProducts(tempProducts);
   }, [allProducts, filters]);
-
 
   useEffect(() => {
     applyFilters();

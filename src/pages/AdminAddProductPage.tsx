@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { collection, addDoc } from 'firebase/firestore';
-import { db } from '../firebaseConfig';
+import apiClient from '../services/api'; // Importamos nuestro cliente de API
 import { Product } from '../types';
 
 const AdminAddProductPage = () => {
@@ -28,8 +27,7 @@ const AdminAddProductPage = () => {
     }));
   };
 
-  const handleArrayChange = (e: React.ChangeEvent<HTMLInputElement>, field: 'images' | 'features') => {
-    // Simple comma-separated string to array
+  const handleArrayChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, field: 'images' | 'features') => {
     const value = e.target.value.split(',').map(item => item.trim());
     setProduct(prev => ({ ...prev, [field]: value }));
   };
@@ -45,8 +43,8 @@ const AdminAddProductPage = () => {
     setError('');
 
     try {
-      const productsCollection = collection(db, 'products');
-      await addDoc(productsCollection, product);
+      // Usamos apiClient para enviar el nuevo producto al backend
+      await apiClient.post('/products', product);
       navigate('/admin');
     } catch (err) {
       setError('Error al guardar el producto. Inténtalo de nuevo.');
