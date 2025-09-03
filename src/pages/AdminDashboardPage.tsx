@@ -1,17 +1,16 @@
 import { useNavigate } from 'react-router-dom';
-import { getAuth, signOut } from 'firebase/auth';
-import { doc, deleteDoc } from 'firebase/firestore';
-import { db } from '../firebaseConfig';
+import apiClient from '../services/api';
 import { useProducts } from '../hooks/useProducts';
+import { useAuth } from '../context/AuthContext';
 import { Product } from '../types';
 
 const AdminDashboardPage = () => {
   const { allProducts, loading, refetchProducts } = useProducts();
+  const { logout } = useAuth();
   const navigate = useNavigate();
-  const auth = getAuth();
 
-  const handleLogout = async () => {
-    await signOut(auth);
+  const handleLogout = () => {
+    logout(); // Llama a la función de logout del contexto
     navigate('/login');
   };
 
@@ -22,9 +21,9 @@ const AdminDashboardPage = () => {
   const handleDelete = async (product: Product) => {
     if (window.confirm(`¿Estás seguro de que quieres eliminar "${product.name}"?`)) {
       try {
-        const productRef = doc(db, 'products', product.id);
-        await deleteDoc(productRef);
-        refetchProducts(); // Vuelve a cargar los productos para reflejar el cambio
+        // Usamos apiClient para enviar la petición de borrado al backend
+        await apiClient.delete(`/products/${product.id}`);
+        refetchProducts(); // Recargamos los productos para reflejar el cambio
       } catch (error) {
         console.error("Error al eliminar el producto: ", error);
         alert("Hubo un error al eliminar el producto.");

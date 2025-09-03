@@ -1,23 +1,28 @@
 import { useState } from 'react';
-import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext'; // Importamos el hook de nuestro contexto
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  const auth = getAuth();
+  const { login } = useAuth(); // Obtenemos la función login del contexto
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+    setLoading(true);
     try {
-      await signInWithEmailAndPassword(auth, email, password);
+      // La función login ahora encapsulará la llamada a la API
+      await login(email, password);
       navigate('/admin'); // Redirigir al panel de admin después del login
     } catch (err) {
       setError('Error al iniciar sesión. Verifica tus credenciales.');
       console.error(err);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -42,8 +47,8 @@ const LoginPage = () => {
           style={{ padding: '0.5rem' }}
         />
         {error && <p style={{ color: 'red' }}>{error}</p>}
-        <button type="submit" style={{ padding: '0.75rem', cursor: 'pointer' }}>
-          Login
+        <button type="submit" disabled={loading} style={{ padding: '0.75rem', cursor: 'pointer' }}>
+          {loading ? 'Iniciando sesión...' : 'Login'}
         </button>
       </form>
     </div>

@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { doc, getDoc, updateDoc } from 'firebase/firestore';
-import { db } from '../firebaseConfig';
+import apiClient from '../services/api'; // Importamos nuestro cliente de API
 import { Product } from '../types';
 
 const AdminEditProductPage = () => {
@@ -15,13 +14,9 @@ const AdminEditProductPage = () => {
     if (!id) return;
     const fetchProduct = async () => {
       try {
-        const productRef = doc(db, 'products', id);
-        const productSnap = await getDoc(productRef);
-        if (productSnap.exists()) {
-          setProduct({ id, ...productSnap.data() } as Product);
-        } else {
-          setError('Producto no encontrado.');
-        }
+        // Usamos apiClient para obtener los datos del producto
+        const response = await apiClient.get(`/products/${id}`);
+        setProduct(response.data);
       } catch (err) {
         setError('Error al cargar el producto.');
         console.error(err);
@@ -41,7 +36,7 @@ const AdminEditProductPage = () => {
     }));
   };
 
-  const handleArrayChange = (e: React.ChangeEvent<HTMLInputElement>, field: 'images' | 'features') => {
+  const handleArrayChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, field: 'images' | 'features') => {
     const value = e.target.value.split(',').map(item => item.trim());
     setProduct(prev => ({ ...prev, [field]: value }));
   };
@@ -57,10 +52,8 @@ const AdminEditProductPage = () => {
     setError('');
 
     try {
-      const productRef = doc(db, 'products', id);
-      // Excluimos el 'id' del objeto a actualizar para no guardarlo en el documento
-      const { id: productId, ...productData } = product;
-      await updateDoc(productRef, productData);
+      // Usamos apiClient para enviar los datos actualizados al backend
+      await apiClient.put(`/products/${id}`, product);
       navigate('/admin');
     } catch (err) {
       setError('Error al actualizar el producto. Inténtalo de nuevo.');
