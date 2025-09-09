@@ -44,6 +44,9 @@ This is a modern, responsive, and high-performance e-commerce front-end built wi
     VITE_FIREBASE_MESSAGING_SENDER_ID="YOUR_MESSAGING_SENDER_ID"
     VITE_FIREBASE_APP_ID="YOUR_APP_ID"
     VITE_FIREBASE_MEASUREMENT_ID="YOUR_MEASUREMENT_ID"
+    
+    # WOMPI Payment Integration
+    VITE_WOMPI_PUBLIC_KEY="YOUR_WOMPI_PUBLIC_KEY"
     ```
 
 4.  **Run the development server:**
@@ -52,6 +55,17 @@ This is a modern, responsive, and high-performance e-commerce front-end built wi
     ```
 
     The application will be available at `http://localhost:5173` (or the next available port).
+
+## Admin Panel
+
+The application includes a complete admin panel for managing products:
+
+- Admin Login: `/login`
+- Dashboard: `/admin`
+- Add Product: `/admin/add-product`
+- Edit Product: `/admin/edit-product/:id`
+
+To access the admin panel, you'll need valid credentials that are verified against the backend API.
 
 ## Available Scripts
 
