@@ -1,203 +1,236 @@
-/* ============================================================
-   TRON GLASS V5.0 - LILU TECNO - MODO DÍA DISEÑO FINAL
-   Si se borra este archivo, src/index.css define un fondo
-   oscuro de respaldo y la app sigue funcionando.
-   ============================================================ */
+/* =========================================================
+   LILU TECNO / TRON — DESIGN TOKENS  (skin only, no logic)
+   Reutiliza el toggle existente: <html class="dark" data-theme="dark|light">.
+   Ambos atributos se setean en sincronía desde ThemeContext (mirroring).
+   TODO(tron): once nothing but Tailwind dark: relies on .dark,
+   migrate to [data-theme] only.
+   ========================================================= */
+/* ---- DEFAULT / FALLBACK (= LIGHT = TRON DAY) ---- */
+:root{
+  --font-display: "Chakra Petch", "Orbitron", system-ui, sans-serif;
+  --font-wordmark: "Michroma", "Orbitron", var(--font-display);
+  --font-body: "Plus Jakarta Sans", "Manrope", "Inter", system-ui, sans-serif;
 
-:root {
-  --bg-main: #F7F5FF;
-  --bg-card: #FFFFFF;
-  --bg-header: rgba(255,255,255,0.75);
-  --bg-search: #EDE9FF;
-  --text-main: #101025;
-  --text-muted: #7A7A9A;
-  --border: rgba(16,16,37,0.07);
-  --shadow-card: 0 10px 30px rgba(31, 38, 135, 0.07), 0 2px 8px rgba(0,0,0,0.04);
-  --shadow-hover: 0 20px 40px rgba(31, 38, 135, 0.12), 0 0 0 1px rgba(139,92,246,0.15);
+  --bg-0:#F5F4FC; --bg-1:#ECEAF7;
+  --surface-1:rgba(255,255,255,.72); --surface-1-solid:#FFFFFF; --surface-2:rgba(255,255,255,.92);
+  --border-1:rgba(255,255,255,.9); --border-2:rgba(120,90,200,.14);
+  --border-glow-from:#22D3EE; --border-glow-to:#A855F7;
+  --text-0:#14141E; --text-1:#3A3A4A; --text-muted:#5E5E72;
+  --accent-cyan:#14B8C4; --accent-cyan-soft:rgba(20,184,196,.12);
+  --accent-violet:#8B3FE0; --accent-violet-soft:rgba(139,63,224,.12);
+  --accent-amber:#F97316; --accent-amber-soft:rgba(249,115,22,.14);
+  --cta-from:#FF7A18; --cta-to:#9B3FE0;
+  --star:#F59E0B; --price:#14141E; --price-old:#9A9AA8;
+  --grid-line:rgba(120,90,200,.06);
+  --glow-1:rgba(139,63,224,.16); --glow-2:rgba(20,184,196,.14);
+  --shadow-card:0 18px 50px rgba(80,60,160,.14), 0 2px 8px rgba(80,60,160,.06);
+  --shadow-glow:0 0 30px rgba(139,63,224,.12), 0 0 40px rgba(20,184,196,.10);
+  --ring-focus:0 0 0 2px #FFFFFF, 0 0 0 4px #14B8C4, 0 0 14px rgba(20,184,196,.4);
+  --radius-card:22px; --radius-cta:12px; --radius-field:12px;
+
+  --font-legacy-sans:"Inter","Plus Jakarta Sans",system-ui,sans-serif;
+  --font-legacy-montserrat:"Montserrat",var(--font-body);
+  --font-legacy-serif:"Playfair Display",var(--font-display);
 }
 
-html { background: #F7F5FF!important; }
-body {
-  background-color: #F7F5FF!important;
+/* ---- LIGHT (TRON DAY) explícito: hereda :root; sin overrides extra ---- */
+[data-theme="light"]{ }
+
+/* ---- DARK (TRON NIGHT) ---- */
+[data-theme="dark"]{
+  --bg-0:#07070F; --bg-1:#0B0B16;
+  --surface-1:#14121F; --surface-1-solid:#14121F; --surface-2:#1A1530; --surface-3:#221A3D;
+  --border-1:rgba(168,85,247,.28);
+  --border-glow-from:#22D3EE; --border-glow-to:#A855F7;
+  --text-0:#EAFBFF; --text-1:#C7C9E0; --text-muted:#8E90AC;
+  --accent-cyan:#2FE6FF; --accent-cyan-soft:rgba(47,230,255,.14);
+  --accent-violet:#B06BFF; --accent-violet-soft:rgba(176,107,255,.16);
+  --accent-amber:#FF9A3D; --accent-amber-soft:rgba(255,154,61,.16);
+  --cta-from:#FF8A1E; --cta-to:#A64BE0;
+  --star:#FFA53D; --price:#62E6FF; --price-old:#7E8099;
+  --grid-line:rgba(120,150,255,.06);
+  --glow-tl:rgba(47,224,255,.30); --glow-tr:rgba(255,138,61,.22);
+  --glow-bl:rgba(255,122,26,.18); --glow-br:rgba(47,224,255,.18);
+  --shadow-card:0 10px 40px rgba(0,0,0,.55), 0 0 0 1px rgba(168,85,247,.18);
+  --shadow-glow:0 0 24px rgba(47,230,255,.18), 0 0 40px rgba(176,107,255,.12);
+  --ring-focus:0 0 0 2px #0B0B16, 0 0 0 4px #2FE6FF, 0 0 16px rgba(47,230,255,.5);
+  --radius-card:20px; --radius-cta:999px; --radius-field:12px;
+}
+
+/* ---- BASE / TIPOGRAFÍA ----
+   Aplicación fiel a las referencias:
+   - --font-wordmark (Michroma): SOLO el logo / wordmark de marca.
+   - --font-display (Chakra Petch): SOLO títulos grandes de hero/sección/página
+     (las grandes: "Dashboard", "Mi cuenta", hero, page-title). NO cards/tablas/labels.
+   - --font-body (Plus Jakarta Sans): TODO lo demás, incluidos nombres de
+     producto, badges, precios, botones, celdas, tablas.
+   Petición explícita del usuario: no aplicar display a TODOS los h1/h2/h3. */
+html{ color-scheme: light dark; }
+[data-theme="dark"]{ color-scheme: dark; }
+[data-theme="light"]{ color-scheme: light; }
+html.dark{ color-scheme: dark; } /* legacy Tailwind dark-mode companion (en sincronía) */
+
+body{
+  margin:0;
+  -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
+  text-rendering:optimizeLegibility;
+  overflow-x:hidden; /* FIX preservado del theme-system anterior */
+}
+/* Selector calificado html[data-theme] body para ganarle a la utility arbitraria
+   `bg-[#F9F9F8]` que vive en <body class="bg-[#F9F9F8]"> del index.html sin
+   tener que tocar el markup (regla HARD). Specificity (0,0,1,2) > .bg-\[\#F9F9F8\] (0,0,1,0). */
+html[data-theme] body{
+  background:var(--bg-0); color:var(--text-0);
+  font-family:var(--font-body);
+  line-height:1.5;
+}
+
+/* Display face sólo en headings GRANDES identificados explícitamente por clase
+   semántica (la añadimos a los hero/page-title cuando toque; nunca a cards/tabla). */
+.display, .display-title, .page-title, .hero-title{
+  font-family:var(--font-display);
+  line-height:1.1;
+  letter-spacing:.01em;
+  font-size:clamp(28px, 4vw, 56px);
+  font-weight:700;
+  word-break:break-word;
+}
+.section-title{
+  font-family:var(--font-display);
+  line-height:1.2;
+  letter-spacing:.02em;
+}
+.wordmark{ font-family:var(--font-wordmark); letter-spacing:.04em; }
+[data-theme="dark"] .display,
+[data-theme="dark"] .display-title,
+[data-theme="dark"] .page-title,
+[data-theme="dark"] .hero-title,
+[data-theme="dark"] .section-title{
+  text-shadow:0 0 18px rgba(47,230,255,.35);
+}
+.num, .price, td, th{ font-variant-numeric:tabular-nums; }
+
+/* Mantenemos utilidades legacy de fuente funcionando (font-sans / font-montserrat /
+   font-serif Tailwind ya mapeadas en tailwind.config.js). tailwind.config.js sigue
+   apuntando a Inter/Montserrat/Playfair; ese archivo NO se toca (regla HARD). */
+
+/* ---- FONDO AMBIENTAL (montado una sola vez por layout raíz) ---- */
+.bg-fx{ position:fixed; inset:0; z-index:-1; pointer-events:none; background:var(--bg-0); }
+.bg-fx::before{
+  content:""; position:absolute; inset:0;
   background-image:
-    linear-gradient(rgba(16,16,37,0.02) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(16,16,37,0.02) 1px, transparent 1px)!important;
-  background-size: 52px 52px!important;
-  position: relative;
-  overflow-x: hidden;
+    linear-gradient(to right, var(--grid-line) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px);
+  background-size:44px 44px;
+  -webkit-mask-image:radial-gradient(120% 120% at 50% 0%, #000 35%, transparent 80%);
+          mask-image:radial-gradient(120% 120% at 50% 0%, #000 35%, transparent 80%);
+}
+.bg-fx::after{
+  content:""; position:absolute; inset:0; filter:blur(8px);
+  background:
+    radial-gradient(40rem 40rem at 0% 0%,   var(--glow-tl, var(--glow-1)) 0%, transparent 60%),
+    radial-gradient(38rem 38rem at 100% 0%, var(--glow-tr, var(--glow-2)) 0%, transparent 60%),
+    radial-gradient(42rem 42rem at 0% 100%, var(--glow-bl, var(--glow-2)) 0%, transparent 60%),
+    radial-gradient(40rem 40rem at 100% 100%, var(--glow-br, var(--glow-1)) 0%, transparent 60%);
 }
 
-/* MANCHAS DE FONDO TRON DAY */
-body::before {
-  content: '';
-  position: fixed;
-  top: -15%;
-  left: -10%;
-  width: 700px;
-  height: 700px;
-  background: radial-gradient(circle at center, rgba(167,139,250,0.18) 0%, rgba(139,92,246,0.10) 30%, transparent 70%);
-  filter: blur(40px);
-  pointer-events: none;
-  z-index: -1;
+/* ---- SKIN: superficies / cards / paneles / modales ---- */
+.surface{
+  background:var(--surface-1); border:1px solid var(--border-1);
+  border-radius:var(--radius-card); box-shadow:var(--shadow-card);
 }
-body::after {
-  content: '';
-  position: fixed;
-  bottom: -20%;
-  right: -15%;
-  width: 800px;
-  height: 800px;
-  background: radial-gradient(circle at center, rgba(0,245,255,0.10) 0%, rgba(56,189,248,0.08) 30%, transparent 70%);
-  filter: blur(50px);
-  pointer-events: none;
-  z-index: -1;
+@supports (backdrop-filter: blur(1px)){
+  [data-theme="light"] .surface{ backdrop-filter:blur(14px) saturate(140%); -webkit-backdrop-filter:blur(14px) saturate(140%); }
 }
-.mancha-extra {
-  position: fixed;
-  top: 40%;
-  left: 50%;
-  width: 600px;
-  height: 600px;
-  background: radial-gradient(circle, rgba(255,122,0,0.06) 0%, transparent 60%);
-  filter: blur(60px);
-  pointer-events: none;
-  z-index: -1;
-  transform: translate(-50%, -50%);
+/* Borde luminoso cyan→violeta (dark) sin tocar el DOM: doble sombra */
+[data-theme="dark"] .surface-glow{
+  box-shadow:var(--shadow-card), var(--shadow-glow),
+             inset 0 0 0 1px color-mix(in srgb, var(--border-glow-from) 35%, transparent);
+  border-color:color-mix(in srgb, var(--border-glow-to) 40%, transparent);
 }
 
-/* HEADER PROFESIONAL */
-header {
-  background: rgba(255,255,255,0.78)!important;
-  backdrop-filter: blur(20px) saturate(180%)!important;
-  -webkit-backdrop-filter: blur(20px) saturate(180%)!important;
-  border-bottom: 1px solid rgba(16,16,37,0.06)!important;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.03), 0 8px 24px rgba(31,38,135,0.04)!important;
+/* ---- SKIN: botón CTA primario (gradiente naranja→violeta) ---- */
+.btn-cta{
+  display:inline-flex; align-items:center; gap:.5em; justify-content:center;
+  background:linear-gradient(90deg, var(--cta-from), var(--cta-to));
+  color:#fff; border:0; border-radius:var(--radius-cta); cursor:pointer;
+  font:700 .95rem/1 var(--font-body); letter-spacing:.02em; padding:.85em 1.4em;
+  text-shadow:0 1px 2px rgba(0,0,0,.28);
+  box-shadow:0 8px 24px rgba(166,75,224,.28), 0 2px 6px rgba(255,138,30,.25);
+  transition:transform .15s ease, filter .2s ease, box-shadow .25s ease;
 }
-header img { filter: drop-shadow(0 2px 8px rgba(139,92,246,0.15)); }
-header input {
-  background: #EDE9FF!important;
-  border: 1px solid rgba(139,92,246,0.12)!important;
-  border-radius: 9999px!important;
-  box-shadow: inset 0 1px 2px rgba(0,0,0,0.03)!important;
-  color: #101025!important;
-  font-weight: 500;
+.btn-cta:hover{ filter:brightness(1.06); transform:translateY(-1px); }
+.btn-cta:active{ transform:translateY(0); filter:brightness(.96); }
+
+/* Botón secundario / ghost */
+.btn-ghost{
+  display:inline-flex; align-items:center; gap:.5em; justify-content:center;
+  background:transparent; border:1px solid var(--border-1); color:var(--text-0);
+  border-radius:var(--radius-cta); cursor:pointer;
+  font:600 .95rem/1 var(--font-body); padding:.85em 1.4em;
+  transition:background-color .2s ease, border-color .2s ease, transform .15s ease;
 }
-header input:focus {
-  background: white!important;
-  border-color: rgba(139,92,246,0.3)!important;
-  box-shadow: 0 0 0 4px rgba(139,92,246,0.10), inset 0 1px 2px rgba(0,0,0,0.03)!important;
+.btn-ghost:hover{ background:var(--surface-2); transform:translateY(-1px); }
+
+/* ---- SKIN: badges ---- */
+.badge{
+  display:inline-flex; align-items:center; padding:.35em .75em; border-radius:999px;
+  font:700 11px/1 var(--font-body); text-transform:uppercase; letter-spacing:.08em;
+  border:1px solid transparent;
 }
-header a, header button {
-  background: white!important;
-  border: 1px solid rgba(0,0,0,0.06)!important;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.04)!important;
-  border-radius: 9999px!important;
-  transition: all 0.2s ease!important;
+.badge--cyan  { color:var(--accent-cyan);  background:var(--accent-cyan-soft);  border-color:color-mix(in srgb, var(--accent-cyan) 45%, transparent); }
+.badge--violet{ color:var(--accent-violet);background:var(--accent-violet-soft);border-color:color-mix(in srgb, var(--accent-violet) 45%, transparent); }
+.badge--amber { color:var(--accent-amber); background:var(--accent-amber-soft); border-color:color-mix(in srgb, var(--accent-amber) 45%, transparent); }
+/* En light, oscurecemos un 10-12 % el texto si fuera necesario para AA (color-mix con negro) */
+[data-theme="light"] .badge--cyan  { color:color-mix(in srgb, var(--accent-cyan) 88%, #000); }
+[data-theme="light"] .badge--violet{ color:color-mix(in srgb, var(--accent-violet) 92%, #000); }
+[data-theme="light"] .badge--amber { color:color-mix(in srgb, var(--accent-amber) 90%, #000); }
+
+/* ---- SKIN: inputs / selects / textareas ---- */
+input, select, textarea, .field{
+  background:var(--surface-2); color:var(--text-0);
+  border:1px solid var(--border-1); border-radius:var(--radius-field);
+  font:500 .95rem/1.4 var(--font-body); padding:.7em .9em;
 }
-header a:hover, header button:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.08)!important;
-  border-color: rgba(139,92,246,0.15)!important;
-}
-header button:has(svg) {
-  background: #EDE9FF!important;
-  border: 2px solid #FFB347!important;
+::placeholder{ color:var(--text-muted); }
+input:focus-visible, select:focus-visible, textarea:focus-visible,
+.btn-cta:focus-visible, .btn-ghost:focus-visible, a:focus-visible,
+button:focus-visible, [tabindex]:focus-visible{
+  outline:none; box-shadow:var(--ring-focus); border-color:var(--accent-cyan);
 }
 
-nav, div[class*="TECNOLOG"] {
-  background: transparent!important;
-}
-nav button, nav a {
-  background: rgba(255,255,255,0.9)!important;
-  border: 1px solid rgba(0,0,0,0.06)!important;
-  border-radius: 9999px!important;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.04)!important;
+/* ---- SKIN: precios / rating / links ---- */
+.price{ color:var(--price); font-weight:700; }
+.price-old{ color:var(--price-old); text-decoration:line-through; }
+.rating{ color:var(--star); }
+a{ color:var(--accent-cyan); }
+
+/* ---- Scrollbars finas con thumb violeta ---- */
+::-webkit-scrollbar { width:6px; height:6px; }
+::-webkit-scrollbar-track { background:transparent; }
+::-webkit-scrollbar-thumb { background:color-mix(in srgb, var(--accent-violet) 50%, transparent); border-radius:3px; }
+::-webkit-scrollbar-thumb:hover { background:var(--accent-violet); }
+html{ scrollbar-width:thin; scrollbar-color:color-mix(in srgb, var(--accent-violet) 50%, transparent) transparent; scroll-behavior:smooth; }
+
+::selection{ background:var(--accent-amber); color:#fff; }
+
+/* ---- Transición de tema (acotada a color/fondo/sombra/borde) ---- */
+body, .surface, .surface-glow, .btn-cta, .btn-ghost, .badge,
+input, select, textarea, .field, table, th, td, a{
+  transition:background-color .25s ease, border-color .25s ease, color .2s ease, box-shadow .25s ease;
 }
 
-/* TARJETAS PRODUCTO */
-div[class*="rounded-"]:has(img) {
-  background: rgba(255,255,255,0.92)!important;
-  backdrop-filter: blur(16px)!important;
-  border: 1px solid rgba(16,16,37,0.06)!important;
-  border-radius: 22px!important;
-  box-shadow:
-    0 1px 2px rgba(0,0,0,0.04),
-    0 8px 24px rgba(31, 38, 135, 0.06),
-    0 0 0 1px rgba(255,255,255,0.8) inset!important;
-  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)!important;
-  overflow: hidden!important;
-}
-div[class*="rounded-"]:has(img):hover {
-  transform: translateY(-6px) scale(1.01)!important;
-  box-shadow:
-    0 20px 40px rgba(31, 38, 135, 0.12),
-    0 8px 16px rgba(0,0,0,0.06),
-    0 0 0 1px rgba(139,92,246,0.12) inset,
-    0 0 20px rgba(0,245,255,0.08)!important;
-  border-color: rgba(139,92,246,0.18)!important;
-}
-div[class*="rounded-"] img {
-  border-radius: 18px 18px 0 0!important;
-  transition: transform 0.6s ease!important;
-}
-div[class*="rounded-"]:hover img {
-  transform: scale(1.04)!important;
-}
+/* ---- FIX preservado (iOS Safari momentum scroll + bg-attachment) ---- */
+body, html{ background-attachment:scroll; -webkit-overflow-scrolling:touch; }
 
-span[class*="-%"], div[class*="-%"] {
-  background: linear-gradient(90deg, #FF7A00 0%, #9D4EDD 100%)!important;
-  color: white!important;
-  box-shadow: 0 4px 12px rgba(255,122,0,0.3)!important;
-  border: 2px solid white!important;
-  backdrop-filter: blur(4px);
+/* ---- WhatsApp: color de marca, de-!important para coexistir con tokens ----
+   (Petición: NO pintar de cyan/violet el botón de WhatsApp; se conserva verde de marca.) */
+a[href*="wa.me"], a[href*="whatsapp"]{
+  background:#25D366; color:#fff; border-radius:9999px;
+  box-shadow:0 8px 24px rgba(37,211,102,.35), 0 4px 12px rgba(0,0,0,.15);
 }
+a[href*="wa.me"] svg, a[href*="whatsapp"] svg{ fill:#fff; color:#fff; }
 
-p[class*="AUDIO"], span[class*="TECNOLOG"], [class*="text-[10px]"] {
-  color: #FF7A00!important;
-  letter-spacing: 0.1em!important;
-  font-weight: 700!important;
+@media (prefers-reduced-motion: reduce){
+  *{ transition:none !important; animation:none !important; }
 }
-
-h3, [class*="font-bold"][class*="text-"] {
-  color: #101025!important;
-  line-height: 1.2!important;
-}
-
-/* BOTON WHATSAPP - Verde real */
-a[href*="wa.me"], a[href*="whatsapp"], button[class*="whatsapp"], div[class*="fixed"][class*="bottom"] a {
-  background: #25D366!important;
-  background-color: #25D366!important;
-  color: white!important;
-  border: 3px solid white!important;
-  border-radius: 9999px!important;
-  width: 60px!important;
-  height: 60px!important;
-  display: flex!important;
-  align-items: center!important;
-  justify-content: center!important;
-  box-shadow: 0 8px 24px rgba(37,211,102,0.35), 0 4px 12px rgba(0,0,0,0.15)!important;
-  z-index: 999!important;
-}
-a[href*="wa.me"] svg, a[href*="whatsapp"] svg {
-  fill: white!important;
-  color: white!important;
-  width: 32px!important;
-  height: 32px!important;
-}
-
-button:has-text("AGREGAR") {
-  background: linear-gradient(90deg, #FF7A00 0%, #9D4EDD 100%)!important;
-  box-shadow: 0 4px 14px rgba(255,122,0,0.25)!important;
-  border-radius: 9999px!important;
-}
-
-aside {
-  background: rgba(255,255,255,0.85)!important;
-  backdrop-filter: blur(16px)!important;
-  border: 1px solid rgba(0,0,0,0.05)!important;
-  border-radius: 20px!important;
-  box-shadow: 0 8px 24px rgba(31,38,135,0.06)!important;
-}
-
-html.dark { color-scheme: dark; }
-body, html { background-attachment: scroll !important; -webkit-overflow-scrolling: touch; }

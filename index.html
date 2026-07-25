@@ -10,15 +10,28 @@
     />
     <script>
       // Anti-flicker: aplica el tema guardado ANTES de pintar el primer frame,
-      // evitando un flash de color incorrecto al cargar.
+      // evitando un flash de color incorrecto al cargar. Escribe clase .dark Y
+      // data-theme en sincronía (mirroring) para que los tokens TRON apliquen
+      // desde el primer paint y nunca destelle el tema equivocado.
       (function () {
         try {
           var t = localStorage.getItem('lilu-theme-v2');
-          if (t !== 'light' && t !== 'dark') t = 'dark';
+          if (t !== 'light' && t !== 'dark') {
+            // Fall back a prefers-color-scheme si no hay preferencia guardada.
+            t = (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches)
+              ? 'light' : 'dark';
+          }
+          var root = document.documentElement;
           if (t === 'light') {
-            document.documentElement.classList.remove('dark');
+            root.classList.remove('dark');
+            root.setAttribute('data-theme', 'light');
             var m = document.querySelector('meta[name="theme-color"]');
-            if (m) m.setAttribute('content', '#F5F3FF');
+            if (m) m.setAttribute('content', '#F5F4FC');
+          } else {
+            root.classList.add('dark');
+            root.setAttribute('data-theme', 'dark');
+            var md = document.querySelector('meta[name="theme-color"]');
+            if (md) md.setAttribute('content', '#07070F');
           }
         } catch (e) {}
       })();
@@ -72,6 +85,10 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
+    <!-- TRON re-skin: display + wordmark + body faces (cargadas aditivamente; legacy fonts quedan como fallback). -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Michroma&display=swap" rel="stylesheet">
     <script type="text/javascript" src="https://checkout.wompi.co/widget.js"></script>
 </head>
   <body class="bg-[#F9F9F8]">

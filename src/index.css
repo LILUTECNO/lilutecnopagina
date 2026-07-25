@@ -30,31 +30,17 @@
   --shadow-glass: 0 8px 32px 0 rgba(0, 0, 0, 0.08);
 }
 
-/* ── Tipografía base estandarizada (jerarquía clara) ── */
+/* ── Tipografía base estandarizada (jerarquía clara) ──
+   FONDO: delegado a tokens (--bg-0) + capa ambiental .bg-fx (montada una sola
+   vez por layout raíz). El fondo de body YA NO declara grid/glows aquí;
+   esa responsabilidad vive en .bg-fx (theme-system.css). Esto neutraliza el
+   bug "they fight": el body respeta el tema activo en ambos modos. */
 body {
-  background-color: #05000b;
-  background-image:
-    /* Cuadrículas Tron — líneas finas en naranja/morado a baja opacidad */
-    linear-gradient(rgba(255, 122, 0, 0.045) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 122, 0, 0.045) 1px, transparent 1px),
-    linear-gradient(rgba(123, 44, 191, 0.05) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(123, 44, 191, 0.05) 1px, transparent 1px),
-    /* Grid mayor (trama secundaria más espaciada) */
-    linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px),
-    /* Radial glows corporativos para profundidad */
-    radial-gradient(circle at 10% 8%, rgba(255, 122, 0, 0.12), transparent 32%),
-    radial-gradient(circle at 90% 92%, rgba(123, 44, 191, 0.16), transparent 34%),
-    /* Degradado base nocturno (mantenido) */
-    linear-gradient(135deg, #1f0b00 0%, #0d0118 50%, #05000b 100%);
-  background-size:
-    44px 44px, 44px 44px,
-    44px 44px, 44px 44px,
-    176px 176px, 176px 176px,
-    100% 100%, 100% 100%, 100% 100%;
+  background-color: var(--bg-0);
+  background-image: none;
   background-attachment: fixed;
   background-position: center center;
-  color: #ffffff;
+  color: var(--text-0);
   font-family: var(--font-family-sans);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -65,20 +51,10 @@ body {
   text-rendering: optimizeLegibility;
 }
 
-/* Las cuadrículas Tron NO se aplican sobre paneles con shell propio (evita doble grid visible en auth) */
-.admin-shell, .partner-shell, .seller-shell, .client-shell { background-image: none; }
+/* Los shells de panel NO pegan su propio grid/glows sobre el body; el fondo
+   ambiental lo aporta .bg-fx (montado en el layout raíz de cada panel). */
 .admin-shell, .partner-shell, .seller-shell, .client-shell {
-  background-image:
-    linear-gradient(rgba(255, 122, 0, 0.04) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 122, 0, 0.04) 1px, transparent 1px),
-    linear-gradient(rgba(123, 44, 191, 0.045) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(123, 44, 191, 0.045) 1px, transparent 1px),
-    linear-gradient(rgba(255, 255, 255, 0.022) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.022) 1px, transparent 1px),
-    radial-gradient(circle at 12% 6%, rgba(255, 122, 0, 0.10), transparent 30%),
-    radial-gradient(circle at 88% 94%, rgba(123, 44, 191, 0.14), transparent 32%),
-    linear-gradient(135deg, #18100a 0%, #0d0118 50%, #05000b 100%);
-  background-size: 40px 40px, 40px 40px, 40px 40px, 40px 40px, 160px 160px, 160px 160px, 100% 100%, 100% 100%, 100% 100%;
+  background-image: none;
   background-attachment: fixed;
   background-position: center center;
 }

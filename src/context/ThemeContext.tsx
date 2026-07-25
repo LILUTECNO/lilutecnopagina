@@ -31,11 +31,29 @@ function readStoredTheme(): Theme {
 function applyTheme(theme: Theme) {
   if (typeof document === 'undefined') return;
   const root = document.documentElement;
-  if (theme === 'dark') root.classList.add('dark');
-  else root.classList.remove('dark');
+  // Mirroring: clase legacy `.dark` (Tailwind dark:) + atributo `[data-theme]`
+  // para los nuevos tokens TRON. Siempre en sincronía, una sola fuente de verdad.
+  // TODO(tron): once nothing but Tailwind dark: relies on .dark, migrate to [data-theme] only.
+  if (theme === 'dark') {
+    root.classList.add('dark');
+    root.setAttribute('data-theme', 'dark');
+  } else {
+    root.classList.remove('dark');
+    root.setAttribute('data-theme', 'light');
+  }
   // theme-color meta (color de barra de navegador en móvil)
   const meta = document.querySelector('meta[name="theme-color"]');
-  if (meta) meta.setAttribute('content', theme === 'dark' ? '#080210' : '#F5F3FF');
+  if (meta) meta.setAttribute('content', theme === 'dark' ? '#07070F' : '#F5F4FC');
+  // Dev-only invariant: los dos atributos nunca deben desincronizarse.
+  if (typeof import.meta !== 'undefined' && import.meta.env?.DEV) {
+    const classDark = root.classList.contains('dark');
+    const attr = root.getAttribute('data-theme');
+    // eslint-disable-next-line no-console
+    console.assert(
+      (classDark && attr === 'dark') || (!classDark && attr === 'light'),
+      `[ThemeContext] desincronización class/attr: class="${classDark}" attr="${attr}"`
+    );
+  }
 }
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
