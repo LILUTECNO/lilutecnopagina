@@ -461,3 +461,165 @@ input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; marg
   box-shadow:var(--ring-focus);
   border-radius:4px;
 }
+
+/* =========================================================
+   LANDING (página principal) — skin reutilizando tokens via override
+   Los componentes heredan el skin porque App no tiene `*-shell`. Recoloreamos
+   utilidades Tailwind oscuras dentro de superficies TRON sólo en LIGHT para no
+   romper el dark original; el header openid es re-skinado en AMBOS temas.
+   ========================================================= */
+
+/* ── Header de la tienda ──
+   El <Header> usa la utility arbitraria `bg-[#100719]/95`; re-skinamos a
+   superficie tokenizada en ambos temas (no tocamos JSX). Specificity:
+   [data-theme] header.bg-… (0,1,1,2) > .bg-\[\#100719\]\/95 (0,0,1,0). */
+[data-theme] header{
+  background:var(--surface-1-solid);
+  border-color:var(--border-1);
+  box-shadow:var(--shadow-card);
+  -webkit-backdrop-filter:blur(18px) saturate(140%);
+          backdrop-filter:blur(18px) saturate(140%);
+}
+@supports (backdrop-filter: blur(1px)){
+  [data-theme="light"] header{ background:var(--surface-1); }
+  [data-theme="dark"] header{ background:rgba(20,18,31,.82); }
+}
+/* Wordmark LILU TECNO en el header: cyan brillante + glow en dark, sólido en light */
+[data-theme] header .font-montserrat,
+[data-theme] header span.tracking-\[0\.16em\]{
+  font-family:var(--font-wordmark);
+  color:var(--accent-cyan);
+  letter-spacing:.06em;
+}
+[data-theme="dark"] header .font-montserrat,
+[data-theme="dark"] header span.tracking-\[0\.16em\]{
+  text-shadow:0 0 16px rgba(47,230,255,.4);
+}
+[data-theme="light"] header .font-montserrat,
+[data-theme="light"] header span.tracking-\[0\.16em\]{
+  color:var(--text-0);
+}
+/* Recoloreamos los textos/hovers del header a tokens. Light test = legible. */
+[data-theme="light"] header .text-white,
+[data-theme="light"] header .text-slate-300,
+[data-theme="light"] header .text-slate-200{ color:var(--text-1); }
+[data-theme="light"] header .text-slate-400,
+[data-theme="light"] header .text-slate-500{ color:var(--text-muted); }
+[data-theme="light"] header .text-orange-300,
+[data-theme="light"] header .text-orange-400,
+[data-theme="light"] header .text-orange-100{ color:var(--accent-amber); }
+[data-theme="light"] header .text-purple-300{ color:var(--accent-violet); }
+[data-theme="light"] header .border-white\/10{ border-color:var(--border-2); }
+[data-theme="light"] header [class*="border-white\/\["]{ border-color:var(--border-2); }
+[data-theme="light"] header .bg-white\/5,
+[data-theme="light"] header .bg-white\/10{
+  background:rgba(120,90,200,.06);
+}
+[data-theme="light"] header [class*="bg-white\/\["]{ background:rgba(120,90,200,.06); }
+[data-theme="light"] header input{
+  background:var(--surface-2); color:var(--text-0);
+  border-color:var(--border-1);
+}
+[data-theme="light"] header input::placeholder{ color:var(--text-muted); }
+
+/* En dark, los textos del header se quedan blancos (legibles). Sólo realineamos
+   el cyan del wordmark (arriba) y el foco cyan de la búsqueda. */
+[data-theme="dark"] header input:focus{
+  border-color:var(--accent-cyan); box-shadow:var(--ring-focus); outline:none;
+}
+
+/* ── Hero carousel ──
+   El hero es un overlay con foto y degradado oscuro; por diseño de marca el
+   hero se mantiene como superficie foto-oscura con texto blanco en AMBOS temas
+   (la referencia Day tiene hero claro pero el gradiente aquí se basa en foto,
+   no en un bloque sólido). A la caja translúcida interior la styleamos con la
+   superficie y el grid/glow token. */
+[data-theme] .glass-card,
+[data-theme] .glass-panel{
+  border-color:var(--border-1);
+}
+[data-theme="light"] .glass-card .text-white,
+[data-theme="light"] .glass-panel .text-white{ color:var(--text-0); }
+[data-theme="light"] .glass-card .text-slate-200,
+[data-theme="light"] .glass-panel .text-slate-200{ color:var(--text-1); }
+[data-theme="light"] .glass-card .text-slate-300,
+[data-theme="light"] .glass-panel .text-slate-300{ color:var(--text-1); }
+[data-theme="light"] .glass-card .text-slate-400,
+[data-theme="light"] .glass-panel .text-slate-400,
+[data-theme="light"] .glass-card .text-slate-500,
+[data-theme="light"] .glass-panel .text-slate-500{ color:var(--text-muted); }
+[data-theme="light"] .glass-card .text-orange-300,
+[data-theme="light"] .glass-panel .text-orange-300,
+[data-theme="light"] .glass-card .text-orange-400{ color:var(--accent-amber); }
+[data-theme="light"] .glass-card .text-purple-300{ color:var(--accent-violet); }
+
+/* Bordes/oscuridad dentro de tarjetas product card en light */
+[data-theme="light"] .glass-card .border-white\/10{ border-color:var(--border-2); }
+[data-theme="light"] .glass-card .border-white\/15{ border-color:var(--border-2); }
+[data-theme="light"] .glass-card [class*="border-white\/\["]{ border-color:var(--border-2); }
+[data-theme="light"] .glass-card .bg-white\/5,
+[data-theme="light"] .glass-card .bg-white\/10{ background:rgba(120,90,200,.05); }
+[data-theme="light"] .glass-card [class*="bg-white\/\["]{ background:rgba(120,90,200,.05); }
+[data-theme="light"] .glass-card .bg-black\/70,
+[data-theme="light"] .glass-card .bg-black\/40,
+[data-theme="light"] .glass-card .bg-black\/20{ background:rgba(20,20,30,.55); }
+
+/* Precio actual (text-white font-semibold) → price token */
+[data-theme] .glass-card .text-white.font-semibold{ color:var(--price); }
+[data-theme] .glass-card .text-slate-500.line-through{ color:var(--price-old); }
+[data-theme] .glass-card .text-orange-400.group-hover\:text-orange-400,
+[data-theme] .glass-card h3.group-hover\:text-orange-400{ transition:color .3s ease; }
+[data-theme] .glass-card h3.group-hover\:text-orange-400:hover{ color:var(--accent-cyan); }
+
+/* Categoría en minúscula cinética (text-orange-400/90) → violet en light, cian en dark */
+[data-theme="dark"] .glass-card .text-orange-400\/90{ color:var(--accent-cyan); }
+[data-theme="light"] .glass-card .text-orange-400\/90{ color:var(--accent-violet); }
+
+/* Botón "Sin Disponibilidad" agotado (text-slate-500 border-white/10 bg-white/5) */
+[data-theme] .glass-card button[disabled]{
+  color:var(--text-muted); border-color:var(--border-1); background:var(--surface-2);
+}
+
+/* ── Hero subtitle/slogan de Header (barra superior blanca/.05) ──
+   La barra superior del header usa wallpaper blanca translúcida (bg-white/5 o
+   bg-white/[.05]); en light la convertimos a soft violeta (badge-signature).
+   El fondo oscuro principal del header (bg-[#100719]/95) se re-skin en surface. */
+[data-theme="light"] header .bg-white\/5{ background:var(--accent-violet-soft); }
+[data-theme="light"] header [class*="bg-white\/\["]{ background:var(--accent-violet-soft); }
+[data-theme="light"] header .bg-\[\#100719\]\/95{ background:var(--surface-1); }
+[data-theme="light"] header [class*="bg-\[\#1"][class*="\/"]{ background:var(--surface-1); }
+
+/* ── Footer ──
+   App usa footer con `bg-black/20 backdrop-blur-md`. Re-skin a superficie token. */
+[data-theme] footer{
+  background:var(--surface-1-solid);
+  border-color:var(--border-1);
+  -webkit-backdrop-filter:blur(14px) saturate(140%);
+          backdrop-filter:blur(14px) saturate(140%);
+}
+@supports (backdrop-filter: blur(1px)){
+  [data-theme="light"] footer{ background:var(--surface-1); }
+  [data-theme="dark"] footer{ background:rgba(20,18,31,.7); }
+}
+[data-theme="light"] footer .text-white,
+[data-theme="light"] footer .font-montserrat{ color:var(--text-0); }
+[data-theme="light"] footer .text-slate-400,
+[data-theme="light"] footer .text-slate-500{ color:var(--text-muted); }
+[data-theme="light"] footer .text-orange-400,
+[data-theme="light"] footer .text-orange-100{ color:var(--accent-amber); }
+[data-theme] footer .font-montserrat{ font-family:var(--font-wordmark); letter-spacing:.06em; }
+
+/* ── FAQ / secciones de vidrio con texto light ──
+   App tiene un glass-card FAQ con p.text-slate-400. */
+[data-theme="light"] .glass-card p.text-slate-400{ color:var(--text-muted); }
+
+/* ── Filtros desktop / mobile modal: usan glass-panel; recoloreamos texto ──
+   FiltersDesktop/FiltersMobileModal heredan del .glass-panel token. Sus textos
+   text-white/text-orange-400/text-slate-400 se recolorean en light. */
+[data-theme="light"] .glass-panel .text-white{ color:var(--text-0); }
+[data-theme="light"] .glass-panel .text-slate-400{ color:var(--text-muted); }
+[data-theme="light"] .glass-panel .text-orange-400{ color:var(--accent-amber); }
+[data-theme="light"] .glass-panel .border-white\/10,
+[data-theme="light"] .glass-panel .border-white\/\[.08\]{ border-color:var(--border-2); }
+[data-theme="light"] .glass-panel .bg-white\/5,
+[data-theme="light"] .glass-panel .bg-white\/10{ background:rgba(120,90,200,.05); }
