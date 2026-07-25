@@ -667,10 +667,6 @@ input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; marg
 }
 
 /* Superficies bg-white/X y bg-black/X en light */
-[data-theme="light"] .client-shell .bg-white\/\[.02\],
-[data-theme="light"] .client-shell .bg-white\/\[.03\],
-[data-theme="light"] .client-shell .bg-white\/\[.04\],
-[data-theme="light"] .client-shell .bg-white\/\[.06\]{ background:var(--surface-2); }
 [data-theme="light"] .client-shell [class*="bg-white\/\["]{ background:var(--surface-2); }
 [data-theme="light"] .client-shell .bg-white\/5,
 [data-theme="light"] .client-shell .bg-white\/10{ background:rgba(120,90,200,.06); }
@@ -875,3 +871,125 @@ input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; marg
 [data-theme] .admin-shell table tbody tr:hover{
   background:var(--surface-2);
 }
+
+/* =========================================================
+   HEROCHIPPER / DROPSHIPPER — `.seller-shell` (DropshipperDashboard,
+   LogisticsPanel, PayoutsPanel)
+   Vistas operativas + estados de envío. La tab-bar activa ya usa
+   `btn-glass-primary` (el gradiente CTA) — perfecto para ambos temas.
+   Mapeo de estados de envío: cyan=vigente, violet=procesando,
+   amber=pendiente, verde=éxito, rojo=error.
+   ========================================================= */
+
+/* Wordmark del dropshipper → --font-wordmark */
+[data-theme] .seller-shell .font-montserrat{
+  font-family:var(--font-wordmark); letter-spacing:.06em; color:var(--text-0);
+}
+[data-theme="dark"] .seller-shell .font-montserrat{
+  color:var(--accent-cyan); text-shadow:0 0 16px rgba(47,230,255,.4);
+}
+
+/* H2/H3 page-titles de operaciones → --font-display (Chakra Petch).
+   Nombres de producto en catálogo siguen siendo medium text-white/slate y NO
+   .display (son cuerpo de UI). */
+[data-theme] .seller-shell h2.font-montserrat,
+[data-theme] .seller-shell h3.font-montserrat{
+  font-family:var(--font-display);
+  line-height:1.14; letter-spacing:.02em; color:var(--text-0);
+}
+[data-theme="dark"] .seller-shell h2.font-montserrat,
+[data-theme="dark"] .seller-shell h3.font-montserrat{
+  text-shadow:0 0 14px rgba(47,230,255,.3);
+}
+
+/* Light-mode text recoloreo */
+[data-theme="light"] .seller-shell .text-white{ color:var(--text-0); }
+[data-theme="light"] .seller-shell .text-slate-300{ color:var(--text-1); }
+[data-theme="light"] .seller-shell .text-slate-400,
+[data-theme="light"] .seller-shell .text-slate-500{ color:var(--text-muted); }
+[data-theme="light"] .seller-shell .text-gray-300,
+[data-theme="light"] .seller-shell .text-gray-400,
+[data-theme="light"] .seller-shell .text-gray-500,
+[data-theme="light"] .seller-shell .text-gray-600{ color:var(--text-muted); }
+[data-theme="light"] .seller-shell .text-orange-300,
+[data-theme="light"] .seller-shell .text-orange-400{ color:var(--accent-amber); }
+[data-theme="light"] .seller-shell .text-purple-300,
+[data-theme="light"] .seller-shell .text-purple-400,
+[data-theme="light"] .seller-shell .text-purple-500{ color:var(--accent-violet); }
+[data-theme="light"] .seller-shell .text-amber-300{ color:var(--accent-amber); }
+[data-theme="light"] .seller-shell .text-red-300,
+[data-theme="light"] .seller-shell .text-red-400,
+[data-theme="light"] .seller-shell .text-red-600{ color:#E11D48; }
+[data-theme="light"] .seller-shell .text-green-500,
+[data-theme="light"] .seller-shell .text-green-600{ color:color-mix(in srgb, #16a34a 92%, #000); }
+[data-theme="light"] .seller-shell .text-blue-500{ color:#1D4ED8; }
+[data-theme="light"] .seller-shell .text-cyan-600{ color:var(--accent-cyan); }
+[data-theme="light"] .seller-shell .text-luxury-black,
+[data-theme="light"] .seller-shell .text-luxury-gold{ color:var(--text-0); }
+
+/* Bordes */
+[data-theme="light"] .seller-shell .border-white\/10,
+[data-theme="light"] .seller-shell .border-white\/12,
+[data-theme="light"] .seller-shell .border-white\/15,
+[data-theme="light"] .seller-shell .border-white\/20{ border-color:var(--border-2); }
+[data-theme="light"] .seller-shell [class*="border-white\/\["]{ border-color:var(--border-2); }
+[data-theme="light"] .seller-shell .border-luxury-gold,
+[data-theme="light"] .seller-shell .border-luxury-silver{ border-color:var(--border-2); }
+[data-theme="light"] .seller-shell .border-orange-400,
+[data-theme="light"] .seller-shell .border-orange-400\/30,
+[data-theme="light"] .seller-shell .hover\:border-orange-400\/30:hover,
+[data-theme="light"] .seller-shell .hover\:border-orange-400\/40:hover{
+  border-color:color-mix(in srgb, var(--accent-amber) 40%, transparent);
+}
+[data-theme="light"] .seller-shell .border-purple-400\/30,
+[data-theme="light"] .seller-shell .hover\:border-purple-400\/30:hover{
+  border-color:color-mix(in srgb, var(--accent-violet) 35%, transparent);
+}
+
+/* Estado semántico borders (LogisticsPanel): cyan/amber/blue/green/purple */
+[data-theme] .seller-shell .border-cyan-400{ border-color:color-mix(in srgb, var(--accent-cyan) 50%, transparent); }
+[data-theme] .seller-shell .border-amber-400{ border-color:color-mix(in srgb, var(--accent-amber) 50%, transparent); }
+[data-theme="dark"] .seller-shell .border-blue-400{ border-color:#3B82F6; }
+[data-theme="light"] .seller-shell .border-blue-400{ border-color:#1D4ED8; }
+[data-theme] .seller-shell .border-green-500{ border-color:color-mix(in srgb, #16a34a 50%, transparent); }
+[data-theme] .seller-shell .border-purple-400{ border-color:color-mix(in srgb, var(--accent-violet) 50%, transparent); }
+[data-theme] .seller-shell .border-amber-500\/30{ border-color:color-mix(in srgb, var(--accent-amber) 40%, transparent); }
+
+/* Superficies bg-white/X y bg-black/70 */
+[data-theme="light"] .seller-shell .bg-white\/5,
+[data-theme="light"] .seller-shell .bg-white\/10{ background:rgba(120,90,200,.05); }
+[data-theme="light"] .seller-shell [class*="bg-white\/\["]{ background:rgba(120,90,200,.05); }
+[data-theme="light"] .seller-shell .hover\:bg-white\/5:hover,
+[data-theme="light"] .seller-shell .hover\:bg-white\/10:hover,
+[data-theme="light"] .seller-shell .hover\:bg-white\/\.95\:hover,
+[data-theme="light"] .seller-shell .hover\:bg-white\/95:hover{ background:var(--surface-2); }
+[data-theme="light"] .seller-shell .hover\:bg-white:hover{ background:var(--surface-2); }
+[data-theme="light"] .seller-shell .bg-black\/70{ background:rgba(20,20,30,.5); }
+
+/* Badge de link personal (text-purple-400) → accent-violet */
+[data-theme="light"] .seller-shell .text-purple-400.font-semibold{ color:var(--accent-violet); }
+
+/* Botones de catálogo con hover naranja */
+[data-theme="dark"] .seller-shell .hover\:text-orange-400:hover{ color:var(--accent-cyan); }
+[data-theme="dark"] .seller-shell .hover\:text-orange-300:hover{ color:var(--accent-cyan); }
+[data-theme="light"] .seller-shell .hover\:text-orange-300:hover,
+[data-theme="light"] .seller-shell .hover\:text-orange-400:hover{ color:var(--accent-amber); }
+[data-theme="light"] .seller-shell .hover\:text-white:hover{ color:var(--text-0); }
+[data-theme="light"] .seller-shell .hover\:text-red-300:hover,
+[data-theme="light"] .seller-shell .hover\:text-red-400:hover{ color:#E11D48; }
+[data-theme="light"] .seller-shell .hover\:bg-orange-400\/10:hover{ background:rgba(249,115,22,.10); }
+[data-theme="light"] .seller-shell .hover\:bg-red-400\/10:hover{ background:rgba(225,29,72,.10); }
+
+/* bg-amber-500/10 (badge pendiente) → soft amber */
+[data-theme] .seller-shell .bg-amber-500\/10,
+[data-theme="light"] .seller-shell .bg-amber-500\/10{ background:var(--accent-amber-soft); }
+
+/* Inputs focus:border-orange-400/60 → cyan ring */
+[data-theme] .seller-shell .focus\:border-orange-400\/60:focus{
+  border-color:var(--accent-cyan); box-shadow:var(--ring-focus); outline:none;
+}
+
+/* Detalles/summary de dropshipper (ya skin de secciones en commit 3);
+   refuerzo color del summary-line text-white en light. */
+[data-theme="light"] .seller-shell summary.text-white,
+[data-theme="light"] .seller-shell summary .text-white{ color:var(--text-0); }
