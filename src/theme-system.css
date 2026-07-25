@@ -114,9 +114,14 @@ html[data-theme] body{
    font-serif Tailwind ya mapeadas en tailwind.config.js). tailwind.config.js sigue
    apuntando a Inter/Montserrat/Playfair; ese archivo NO se toca (regla HARD). */
 
-/* ---- FONDO AMBIENTAL (montado una sola vez por layout raíz) ---- */
-.bg-fx{ position:fixed; inset:0; z-index:-1; pointer-events:none; background:var(--bg-0); }
-.bg-fx::before{
+/* ---- FONDO AMBIENTAL (montado una sola vez por layout raíz) ----
+   En esta app el wrapper vive en src/main.tsx con la clase legacy
+   `.bg-glow-wrapper-fixed`; por eso lo aliasamos aquí como su .bg-fx.
+   No se toca JSX/main.tsx: aprovechamos el wrapper existente como host. */
+.bg-fx, .bg-glow-wrapper-fixed{
+  position:fixed; inset:0; z-index:-1; pointer-events:none; background:var(--bg-0);
+}
+.bg-fx::before, .bg-glow-wrapper-fixed::before{
   content:""; position:absolute; inset:0;
   background-image:
     linear-gradient(to right, var(--grid-line) 1px, transparent 1px),
@@ -125,7 +130,7 @@ html[data-theme] body{
   -webkit-mask-image:radial-gradient(120% 120% at 50% 0%, #000 35%, transparent 80%);
           mask-image:radial-gradient(120% 120% at 50% 0%, #000 35%, transparent 80%);
 }
-.bg-fx::after{
+.bg-fx::after, .bg-glow-wrapper-fixed::after{
   content:""; position:absolute; inset:0; filter:blur(8px);
   background:
     radial-gradient(40rem 40rem at 0% 0%,   var(--glow-tl, var(--glow-1)) 0%, transparent 60%),
@@ -133,6 +138,12 @@ html[data-theme] body{
     radial-gradient(42rem 42rem at 0% 100%, var(--glow-bl, var(--glow-2)) 0%, transparent 60%),
     radial-gradient(40rem 40rem at 100% 100%, var(--glow-br, var(--glow-1)) 0%, transparent 60%);
 }
+/* Los wrappers legacy internos (glow-orange/glow-cyan) ya no pegan manchas
+   extra: el ::after del propio host dibuja todos los glows de esquina.
+   .mancha-extra se neutraliza (display:none) porque ya no representa luz
+   puntual; el fondo ambiental unificado reemplaza la mancha vieja. */
+.glow-orange, .glow-cyan{ display:none; }
+.mancha-extra{ display:none; }
 
 /* ---- SKIN: superficies / cards / paneles / modales ---- */
 .surface{
