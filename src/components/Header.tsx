@@ -1,187 +1,75 @@
-import React, { useEffect, useRef } from 'react';
-import { Link, useLocation } from 'react-router-dom'; // Importar Link y useLocation
-import { SearchIcon, MenuIcon, ShoppingCartIcon, WhatsAppIcon, SparklesIcon, TagIcon, ClockIcon, ShieldCheckIcon } from './Icons.tsx';
-import liluLogo from '../assets/images/lilutecnologo.png'; 
-import { WHATSAPP_NUMBER_LINK_BASE } from '../constants.ts';
+import React, { useState } from 'react';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
+import { ShoppingBag, Search, User, LogOut, Heart, Menu, ChevronDown, SlidersHorizontal, X, Info, Tags, LayoutGrid } from 'lucide-react';
+import logo from '../assets/images/lilutecnologo.png';
+import ThemeToggleTRON from './ThemeToggleTRON';
 
 interface HeaderProps {
-  searchTerm: string;
-  onSearchChange: (term: string) => void;
-  totalCartItems: number;
-  onCartClick: () => void;
-  onMobileFiltersClick: () => void;
-  filteredCount: number;
-  totalAvailableCount: number;
-  isHeaderVisible: boolean;
+  searchTerm?: string;
+  onSearchChange?: (term: string) => void;
+  totalCartItems?: number;
+  onCartClick?: () => void;
+  onMobileFiltersClick?: () => void;
+  isHeaderVisible?: boolean;
+  filteredCount?: number;
+  totalAvailableCount?: number;
+  categories?: string[];
+  onCategorySelect?: (category: string) => void;
 }
 
-export const Header: React.FC<HeaderProps> = ({
-  searchTerm,
-  onSearchChange,
-  totalCartItems,
-  onCartClick,
-  onMobileFiltersClick,
-  filteredCount,
-  totalAvailableCount,
-  isHeaderVisible
-}) => {
-  const scrollContainerRef = useRef<HTMLDivElement>(null);
-  const intervalRef = useRef<number | null>(null);
-  const timeoutRef = useRef<number | null>(null);
-  const location = useLocation(); // Hook para obtener la ubicación actual
+const menuGroups = [
+  { label: 'Tecnología', terms: ['tecnología móvil', 'celular', 'pc', 'teclado', 'ratón', 'mouse', 'televisor', 'audio', 'seguridad', 'repuesto', 'cargador'] },
+  { label: 'Estilo de vida', terms: ['morral', 'maleta', 'salud', 'belleza', 'mascota', 'regalo', 'recuerdo'] },
+];
 
+export const Header: React.FC<HeaderProps> = ({ searchTerm = '', onSearchChange = () => {}, totalCartItems = 0, onCartClick = () => {}, onMobileFiltersClick = () => {}, isHeaderVisible = true, categories = [], onCategorySelect }) => {
+  const { currentUser, logout } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const [openMenu, setOpenMenu] = useState<string | null>(null);
+  const [mobileOpen, setMobileOpen] = useState(false);
   const isProductPage = location.pathname.startsWith('/product/');
 
-  const stats = [
-    { icon: TagIcon, value: filteredCount, label: 'En oferta' },
-    { icon: SparklesIcon, value: totalAvailableCount, label: 'Disponibles' },
-    { icon: ClockIcon, value: '24h', label: 'Envío Rápido' },
-    { icon: ShieldCheckIcon, value: '100%', label: 'Garantía' }
-  ];
-
-  const startAutoScroll = () => {
-    if (intervalRef.current) clearInterval(intervalRef.current);
-    
-    intervalRef.current = window.setInterval(() => {
-      if (scrollContainerRef.current) {
-        const { scrollLeft, scrollWidth, clientWidth } = scrollContainerRef.current;
-        if (scrollLeft + clientWidth >= scrollWidth - 1) {
-          scrollContainerRef.current.scrollTo({ left: 0, behavior: 'smooth' });
-        } else {
-          scrollContainerRef.current.scrollBy({ left: clientWidth / 4, behavior: 'smooth' });
-        }
-      }
-    }, 3000);
+  const dashboard = !currentUser ? '/login' : currentUser.role === 'admin' ? '/admin' : currentUser.role === 'proveedor' ? '/proveedor' : currentUser.role === 'dropshipper' ? '/dropshipper' : '/cliente';
+  const selectCategory = (category: string) => {
+    onCategorySelect?.(category);
+    setOpenMenu(null);
+    setMobileOpen(false);
+    if (location.pathname !== '/') navigate('/');
+    window.setTimeout(() => document.getElementById('catalogo')?.scrollIntoView({ behavior: 'smooth' }), 50);
   };
+  const groupedCategories = (terms: string[]) => categories.filter(category => terms.some(term => category.toLowerCase().includes(term)));
 
-  const stopAutoScroll = () => {
-    if (intervalRef.current) clearInterval(intervalRef.current);
-    if (timeoutRef.current) clearTimeout(timeoutRef.current);
-  };
-
-  const handleManualInteraction = () => {
-    stopAutoScroll();
-    timeoutRef.current = window.setTimeout(startAutoScroll, 5000);
-  };
-  
-  useEffect(() => {
-    const scrollContainer = scrollContainerRef.current;
-    const mediaQuery = window.matchMedia('(max-width: 767px)');
-    
-    const handleMediaQueryChange = (e: MediaQueryListEvent) => {
-      if (e.matches) {
-        startAutoScroll();
-      } else {
-        stopAutoScroll();
-      }
-    };
-
-    if (mediaQuery.matches) {
-      startAutoScroll();
-    }
-
-    mediaQuery.addEventListener('change', handleMediaQueryChange);
-    
-    if (scrollContainer) {
-      scrollContainer.addEventListener('pointerdown', handleManualInteraction);
-      scrollContainer.addEventListener('wheel', handleManualInteraction, { passive: true });
-    }
-
-    return () => {
-      stopAutoScroll();
-      mediaQuery.removeEventListener('change', handleMediaQueryChange);
-      if (scrollContainer) {
-        scrollContainer.removeEventListener('pointerdown', handleManualInteraction);
-        scrollContainer.removeEventListener('wheel', handleManualInteraction);
-      }
-    };
-  }, [filteredCount, totalAvailableCount]);
-
-  return (
-    <header className={`bg-gradient-to-r from-orange-500 via-red-500 to-purple-600 shadow-2xl sticky top-0 z-50 text-white transition-transform duration-300 ease-in-out ${isHeaderVisible ? 'translate-y-0' : '-translate-y-full'}`}>
-      <div className="bg-gradient-to-r from-yellow-400 to-orange-500 text-black text-center py-2 px-4">
-        <div className="flex items-center justify-center gap-2 text-sm sm:text-base font-black tracking-wide">
-          <SparklesIcon className="w-5 h-5 text-red-600 animate-pulse" />
-          <span className="truncate">¡OFERTAS MUNDIALES! Hasta 70% OFF</span>
-          <SparklesIcon className="w-5 h-5 text-red-600 animate-pulse" />
+  const navigateToHowItWorks = () => { setMobileOpen(false); setOpenMenu(null); navigate('/como-funciona'); };
+  return <header className={`sticky top-0 z-50 border-b border-white/[.08] bg-[#100719]/95 shadow-[0_10px_30px_rgba(0,0,0,.4)] backdrop-blur-2xl transition-transform duration-300 ${isHeaderVisible ? 'translate-y-0' : '-translate-y-full'}`}>
+    <div className="bg-white/[.05] text-slate-300 text-center py-2 px-4 border-b border-white/[.08]"><p className="text-[9px] uppercase tracking-[0.28em] font-medium">Tecnología y estilo de vida · Envíos nacionales asegurados</p></div>
+    <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-4">
+      <div className="flex items-center gap-3">
+        <Link to="/" className="shrink-0 flex items-center gap-2.5 transition-transform duration-300 hover:scale-[1.02]" aria-label="Inicio Lilu Tecno"><img src={logo} alt="" className="h-9 w-9 rounded-full object-contain ring-1 ring-white/10" /><span className="font-montserrat text-lg sm:text-xl font-black tracking-[0.16em] text-white">LILU TECNO</span></Link>
+        {!isProductPage && <div className="relative hidden flex-1 max-w-2xl mx-auto md:block">
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+          <input type="search" placeholder="Busca productos, marcas y categorías" value={searchTerm} onChange={(e) => onSearchChange(e.target.value)} className="w-full glass-input rounded-full py-2.5 pl-11 pr-4 text-xs focus:outline-none" />
+        </div>}
+        <div className="ml-auto flex items-center gap-1.5 sm:gap-2.5 shrink-0">
+          {!isProductPage && <button onClick={onMobileFiltersClick} className="hidden lg:hidden rounded-full border border-white/10 bg-white/5 p-2 text-orange-300 hover:bg-white/10 hover:border-orange-400/40 transition-all duration-300 hover:scale-105" aria-label="Abrir filtros"><SlidersHorizontal className="h-5 w-5" /></button>}
+          <button onClick={() => navigate(dashboard)} className="hidden sm:flex items-center gap-1.5 p-2 text-slate-300 hover:text-white text-[10px] uppercase tracking-wider transition-all duration-300 hover:scale-105 rounded-lg hover:bg-white/5"><User className="h-4 w-4" /><span>Mi cuenta</span></button>
+          <button onClick={() => navigate(dashboard)} className="hidden md:flex items-center gap-1.5 p-2 text-slate-300 hover:text-white text-[10px] uppercase tracking-wider transition-all duration-300 hover:scale-105 rounded-lg hover:bg-white/5"><Heart className="h-4 w-4" /><span>Favoritos</span></button>
+          <ThemeToggleTRON label="Cambiar entre modo día y noche" />
+          <button onClick={onCartClick} className="relative flex items-center gap-1.5 rounded-full border border-orange-400/30 bg-orange-400/10 p-2.5 text-orange-100 hover:bg-orange-400/20 hover:border-orange-400/50 transition-all duration-300 hover:scale-105" aria-label="Carrito de compras"><ShoppingBag className="h-5 w-5" /><span className="hidden sm:inline text-[10px] uppercase tracking-wider">Carrito</span>{totalCartItems > 0 && <span className="absolute -top-1 -right-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-gradient-to-r from-[#ff7a00] to-[#7b2cbf] px-1 text-[9px] font-bold text-white shadow-lg">{totalCartItems}</span>}</button>
+          {currentUser && <button onClick={async () => { await logout(); navigate('/'); }} className="hidden lg:block p-2 text-slate-400 hover:text-red-400 transition-all duration-300 hover:scale-105 rounded-lg hover:bg-white/5" title="Cerrar sesión"><LogOut className="h-4 w-4" /></button>}
+          {!isProductPage && <button onClick={() => setMobileOpen(value => !value)} className="md:hidden rounded-full border border-white/10 bg-white/5 p-2 text-white hover:bg-white/10 transition-all duration-300 hover:scale-105" aria-label={mobileOpen ? 'Cerrar menú' : 'Abrir menú'} aria-expanded={mobileOpen}>{mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}</button>}
         </div>
       </div>
-
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-4">
-        <div className="flex flex-col gap-4">
-          <div className="flex items-center justify-between">
-            <Link to="/" className="flex items-center space-x-3"> {/* Envolver con Link */}
-              <img 
-                src={liluLogo} 
-                alt="Logo de LiluTecno" 
-                className="h-14 w-auto" 
-              />
-              <div className="flex flex-col">
-                <h1 className="text-2xl md:text-3xl font-black text-white drop-shadow-lg">LiluTecno</h1>
-              </div>
-            </Link>
-            <div className="flex items-center space-x-2 sm:space-x-3">
-              {!isProductPage && ( // Mostrar botón de filtros solo si no es la página de producto
-                <button
-                  onClick={onMobileFiltersClick}
-                  className="lg:hidden p-2 bg-white/20 border border-white/25 rounded-xl text-white backdrop-blur-sm hover:bg-white/30 transition-colors"
-                  aria-label="Abrir menú y filtros"
-                >
-                  <MenuIcon className="h-6 w-6" />
-                </button>
-              )}
-              <button
-                onClick={onCartClick}
-                className="relative p-3 bg-white/20 border border-white/25 rounded-xl text-white backdrop-blur-sm hover:bg-white/30 transition-colors"
-                aria-label="Ver carrito de compras"
-              >
-                <ShoppingCartIcon className="h-6 w-6" />
-                {totalCartItems > 0 && (
-                  <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-xs font-bold ring-2 ring-white">
-                    {totalCartItems}
-                  </span>
-                )}
-              </button>
-              <a
-                href={WHATSAPP_NUMBER_LINK_BASE}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="p-3 bg-green-500 rounded-xl text-white shadow-lg hover:bg-green-600 transition-colors"
-                aria-label="Contactar por WhatsApp"
-              >
-                <WhatsAppIcon className="h-6 w-6" />
-              </a>
-            </div>
-          </div>
-
-          {!isProductPage && ( // Mostrar barra de búsqueda solo si no es la página de producto
-            <div className="relative">
-              <SearchIcon className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-300 pointer-events-none" />
-              <input
-                type="text"
-                placeholder="Busca tu producto favorito..."
-                value={searchTerm}
-                onChange={(e) => onSearchChange(e.target.value)}
-                className="w-full bg-gray-600/50 backdrop-blur-sm text-white placeholder-gray-300 border border-white/25 rounded-xl py-3 pl-12 pr-4 focus:outline-none focus:ring-2 focus:ring-orange-300 transition-all"
-              />
-            </div>
-          )}
-
-          {!isProductPage && ( // Mostrar estadísticas solo si no es la página de producto
-            <div ref={scrollContainerRef} className="md:grid md:grid-cols-4 flex overflow-x-auto gap-3 pb-2 -mx-4 px-4 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none']">
-              {stats.map((stat, index) => (
-                <div key={index} className="flex-shrink-0 flex items-center gap-2 text-white bg-white/10 p-3 rounded-lg backdrop-blur-sm w-40 md:w-auto">
-                  <stat.icon className="w-6 h-6" />
-                  <div>
-                    <p className="font-bold text-lg">{stat.value}</p>
-                    <p className="text-xs opacity-80">{stat.label}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      </div>
-    </header>
-  );
+      {!isProductPage && <div className="relative mt-4 md:hidden"><Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" /><input type="search" placeholder="Busca productos, marcas y categorías" value={searchTerm} onChange={(e) => onSearchChange(e.target.value)} className="w-full glass-input rounded-full py-3 pl-11 pr-4 text-xs focus:outline-none" /></div>}
+    </div>
+    {!isProductPage && <nav className="hidden border-t border-white/[.08] md:block"><div className="container mx-auto px-4 sm:px-6 lg:px-8 flex min-w-max items-center gap-1">
+      {menuGroups.map(group => <div className="relative" key={group.label}><button onClick={() => setOpenMenu(openMenu === group.label ? null : group.label)} className="flex items-center gap-1.5 px-4 py-3.5 text-[10px] uppercase tracking-[0.16em] text-slate-300 hover:text-white transition-colors duration-300 rounded-lg hover:bg-white/5"><Menu className="h-3.5 w-3.5" />{group.label}<ChevronDown className={`h-3.5 w-3.5 transition-transform duration-300 ${openMenu === group.label ? 'rotate-180' : ''}`} /></button>{openMenu === group.label && <div className="absolute left-0 top-full w-64 glass-panel p-2.5 shadow-2xl rounded-2xl mt-1"><p className="px-3 py-2 text-[9px] uppercase tracking-widest text-orange-400 font-semibold">{group.label}</p>{groupedCategories(group.terms).map(category => <button key={category} onClick={() => selectCategory(category)} className="block w-full rounded-xl px-3 py-2.5 text-left text-xs text-slate-200 hover:bg-white/10 hover:text-white transition-colors duration-200">{category}</button>)}<button onClick={() => selectCategory('')} className="block w-full rounded-xl px-3 py-2.5 text-left text-xs text-orange-300 hover:bg-white/10 transition-colors duration-200">Ver todo</button></div>}</div>)}
+      <button onClick={() => selectCategory('__offers__')} className="px-4 py-3.5 text-[10px] uppercase tracking-[0.16em] text-orange-400 hover:text-orange-300 transition-colors duration-300 rounded-lg hover:bg-orange-400/5">Ofertas</button>
+      <button onClick={() => selectCategory('__new__')} className="px-4 py-3.5 text-[10px] uppercase tracking-[0.16em] text-slate-300 hover:text-white transition-colors duration-300 rounded-lg hover:bg-white/5">Novedades</button>
+      <button onClick={navigateToHowItWorks} className="flex items-center gap-1.5 px-4 py-3.5 text-[10px] uppercase tracking-[0.16em] text-slate-300 hover:text-white transition-colors duration-300 rounded-lg hover:bg-white/5"><Info className="h-3.5 w-3.5" />Cómo funciona</button>
+      <div className="relative"><button onClick={() => setOpenMenu(openMenu === 'more' ? null : 'more')} className="flex items-center gap-1.5 px-4 py-3.5 text-[10px] uppercase tracking-[0.16em] text-slate-300 hover:text-white transition-colors duration-300 rounded-lg hover:bg-white/5">Más <ChevronDown className={`h-3.5 w-3.5 transition-transform duration-300 ${openMenu === 'more' ? 'rotate-180' : ''}`} /></button>{openMenu === 'more' && <div className="absolute right-0 top-full max-h-[70vh] w-64 overflow-y-auto glass-panel p-2.5 shadow-2xl rounded-2xl mt-1"><p className="px-3 py-2 text-[9px] uppercase tracking-widest text-orange-400 font-semibold">Todas las categorías</p>{categories.map(category => <button key={category} onClick={() => selectCategory(category)} className="block w-full rounded-xl px-3 py-2.5 text-left text-xs text-slate-200 hover:bg-white/10 hover:text-white transition-colors duration-200">{category}</button>)}<div className="my-2 border-t border-white/10" /><a href="mailto:soporte@lilutecno.com" className="block rounded-xl px-3 py-2.5 text-xs text-slate-200 hover:bg-white/10 hover:text-white transition-colors duration-200">Contacto</a><a href="#preguntas" className="block rounded-xl px-3 py-2.5 text-xs text-slate-200 hover:bg-white/10 hover:text-white transition-colors duration-200">Preguntas frecuentes</a></div>}</div>
+    </div></nav>}
+    {!isProductPage && mobileOpen && <div className="border-t border-white/[.08] bg-[#100719]/95 px-4 py-5 md:hidden animate-fade-up"><div className="rounded-2xl border border-white/10 bg-white/[.04] p-2.5 shadow-2xl"><p className="px-3 pb-2 pt-2 text-[9px] font-bold uppercase tracking-[.24em] text-slate-500">Navegación</p><div className="grid gap-1"><button onClick={() => selectCategory('')} className="flex items-center gap-3 rounded-xl px-3 py-3.5 text-left text-xs hover:bg-white/[.08] transition-colors duration-200"><LayoutGrid className="h-4 w-4 text-orange-300" />Ver todo el catálogo</button><button onClick={() => selectCategory('__offers__')} className="flex items-center gap-3 rounded-xl px-3 py-3.5 text-left text-xs text-orange-300 hover:bg-white/[.08] transition-colors duration-200"><Tags className="h-4 w-4" />Ofertas</button><button onClick={() => { setMobileOpen(false); onMobileFiltersClick(); }} className="flex items-center gap-3 rounded-xl px-3 py-3.5 text-left text-xs hover:bg-white/[.08] transition-colors duration-200"><SlidersHorizontal className="h-4 w-4 text-purple-300" />Filtrar catálogo</button><button onClick={navigateToHowItWorks} className="flex items-center gap-3 rounded-xl px-3 py-3.5 text-left text-xs hover:bg-white/[.08] transition-colors duration-200"><Info className="h-4 w-4 text-purple-300" />Cómo funciona Lilu Tecno</button><button onClick={() => { setMobileOpen(false); navigate(dashboard); }} className="flex items-center gap-3 rounded-xl px-3 py-3.5 text-left text-xs hover:bg-white/[.08] transition-colors duration-200"><User className="h-4 w-4 text-orange-300" />Mi cuenta</button></div></div></div>}
+  </header>;
 };

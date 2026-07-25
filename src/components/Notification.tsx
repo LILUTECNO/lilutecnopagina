@@ -1,6 +1,6 @@
 
 import React, { useEffect, useState } from 'react';
-import { CheckCircleIcon, XCircleIcon, InformationCircleIcon } from './Icons.tsx'; // Assuming XCircle is for error
+import { CheckCircleIcon, XCircleIcon } from './Icons.tsx'; // Assuming XCircle is for error
 
 interface NotificationProps {
   message: string;

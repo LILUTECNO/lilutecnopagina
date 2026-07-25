@@ -1,3 +1,357 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+@import "./theme-system.css";
+
+@theme {
+  /* Colores Luxury */
+  --color-luxury-off-white: #F9F9F8;
+  --color-luxury-off-white-darker: #F3F3F1;
+  --color-luxury-gold: #C5A880;
+  --color-luxury-gold-dark: #A88C64;
+  --color-luxury-gold-light: #E2D4C1;
+  --color-luxury-black: #0A0A0A;
+  --color-luxury-charcoal: #1A1A1A;
+  --color-luxury-midnight: #0A1128;
+  --color-luxury-silver: #E5E5E5;
+  --color-luxury-bronze: #A05C2B;
+
+  /* Tipografías */
+  --font-family-sans: "Inter", sans-serif;
+  --font-family-montserrat: "Montserrat", sans-serif;
+  --font-family-serif: "Playfair Display", serif;
+
+  /* Radius consistente */
+  --radius-soft: 0.75rem;
+  --radius-card: 1rem;
+  --radius-panel: 1.25rem;
+
+  /* Sombras */
+  --shadow-luxury: 0 4px 30px rgba(0, 0, 0, 0.03);
+  --shadow-luxury-hover: 0 10px 40px rgba(0, 0, 0, 0.08);
+  --shadow-glass: 0 8px 32px 0 rgba(0, 0, 0, 0.08);
+}
+
+/* ── Tipografía base estandarizada (jerarquía clara) ── */
+body {
+  background-color: #05000b;
+  background-image:
+    /* Cuadrículas Tron — líneas finas en naranja/morado a baja opacidad */
+    linear-gradient(rgba(255, 122, 0, 0.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 122, 0, 0.045) 1px, transparent 1px),
+    linear-gradient(rgba(123, 44, 191, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(123, 44, 191, 0.05) 1px, transparent 1px),
+    /* Grid mayor (trama secundaria más espaciada) */
+    linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+    /* Radial glows corporativos para profundidad */
+    radial-gradient(circle at 10% 8%, rgba(255, 122, 0, 0.12), transparent 32%),
+    radial-gradient(circle at 90% 92%, rgba(123, 44, 191, 0.16), transparent 34%),
+    /* Degradado base nocturno (mantenido) */
+    linear-gradient(135deg, #1f0b00 0%, #0d0118 50%, #05000b 100%);
+  background-size:
+    44px 44px, 44px 44px,
+    44px 44px, 44px 44px,
+    176px 176px, 176px 176px,
+    100% 100%, 100% 100%, 100% 100%;
+  background-attachment: fixed;
+  background-position: center center;
+  color: #ffffff;
+  font-family: var(--font-family-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  min-height: 100vh;
+  font-size: 14px;
+  line-height: 1.65;
+  letter-spacing: 0.005em;
+  text-rendering: optimizeLegibility;
+}
+
+/* Las cuadrículas Tron NO se aplican sobre paneles con shell propio (evita doble grid visible en auth) */
+.admin-shell, .partner-shell, .seller-shell, .client-shell { background-image: none; }
+.admin-shell, .partner-shell, .seller-shell, .client-shell {
+  background-image:
+    linear-gradient(rgba(255, 122, 0, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 122, 0, 0.04) 1px, transparent 1px),
+    linear-gradient(rgba(123, 44, 191, 0.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(123, 44, 191, 0.045) 1px, transparent 1px),
+    linear-gradient(rgba(255, 255, 255, 0.022) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.022) 1px, transparent 1px),
+    radial-gradient(circle at 12% 6%, rgba(255, 122, 0, 0.10), transparent 30%),
+    radial-gradient(circle at 88% 94%, rgba(123, 44, 191, 0.14), transparent 32%),
+    linear-gradient(135deg, #18100a 0%, #0d0118 50%, #05000b 100%);
+  background-size: 40px 40px, 40px 40px, 40px 40px, 40px 40px, 160px 160px, 160px 160px, 100% 100%, 100% 100%, 100% 100%;
+  background-attachment: fixed;
+  background-position: center center;
+}
+
+/* Jerarquía tipográfica unificada */
+h1, h2, h3 { font-family: var(--font-family-montserrat); line-height: 1.25; letter-spacing: -0.005em; }
+h1 { font-weight: 700; font-size: clamp(1.625rem, 1.2rem + 1.6vw, 2.25rem); }
+h2 { font-weight: 600; font-size: clamp(1.375rem, 1.1rem + 1vw, 1.75rem); }
+h3 { font-weight: 600; font-size: 1.125rem; }
+p { line-height: 1.7; }
+
+/* ─── GLASS CORREGIDO (más opacidad + blur intenso = mejor legibilidad) ─── */
+.glass-panel {
+  background: rgba(16, 7, 25, 0.82);
+  backdrop-filter: blur(28px) saturate(140%);
+  -webkit-backdrop-filter: blur(28px) saturate(140%);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  box-shadow: 0 24px 60px 0 rgba(0, 0, 0, 0.45), inset 0 1px 0 0 rgba(255,255,255,0.06);
+}
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.045);
+  backdrop-filter: blur(18px) saturate(130%);
+  -webkit-backdrop-filter: blur(18px) saturate(130%);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  box-shadow: 0 4px 20px 0 rgba(0, 0, 0, 0.18);
+  transition: all 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.glass-card:hover {
+  background: rgba(255, 255, 255, 0.075);
+  border-color: rgba(255, 122, 0, 0.32);
+  box-shadow: 0 14px 38px 0 rgba(123, 44, 191, 0.25), inset 0 1px 0 0 rgba(255,255,255,0.07);
+  transform: translateY(-5px);
+}
+
+/* ── Category Explorer Glass Cards ── */
+.category-glass-card {
+  background: rgba(255, 255, 255, 0.045);
+  backdrop-filter: blur(20px) saturate(135%);
+  -webkit-backdrop-filter: blur(20px) saturate(135%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 6px 26px 0 rgba(0, 0, 0, 0.28), inset 0 1px 0 0 rgba(255, 255, 255, 0.05);
+  transition: all 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+  animation: categoryFadeUp 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.category-glass-card:hover {
+  background: rgba(255, 255, 255, 0.075);
+  border-color: rgba(255, 122, 0, 0.30);
+  box-shadow: 0 16px 42px 0 rgba(123, 44, 191, 0.22), 0 4px 16px 0 rgba(255, 122, 0, 0.12), inset 0 1px 0 0 rgba(255, 255, 255, 0.08);
+  transform: translateY(-6px);
+}
+
+.category-glass-card--active {
+  background: rgba(255, 122, 0, 0.07) !important;
+  border-color: rgba(255, 122, 0, 0.40) !important;
+  box-shadow: 0 16px 42px 0 rgba(123, 44, 191, 0.28), 0 4px 16px 0 rgba(255, 122, 0, 0.15), inset 0 1px 0 0 rgba(255, 255, 255, 0.10) !important;
+  transform: translateY(-4px) !important;
+}
+
+.category-icon-svg { width: 100%; height: 100%; stroke-linecap: round; stroke-linejoin: round; }
+
+@keyframes categoryFadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+/* ─── Inputs glass (legibles) ─── */
+.glass-input {
+  background: rgba(255, 255, 255, 0.055);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  color: #ffffff;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+}
+
+.glass-input::placeholder { color: rgba(255,255,255,0.38); }
+
+.glass-input:focus {
+  background: rgba(255, 255, 255, 0.085);
+  border-color: rgba(255, 122, 0, 0.55);
+  box-shadow: 0 0 0 3px rgba(255, 122, 0, 0.14);
+  outline: none;
+}
+
+/* ─── Botones degradados con micro-interacciones ─── */
+.btn-glass-primary {
+  background: linear-gradient(135deg, #ff7a00 0%, #7b2cbf 100%);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  box-shadow: 0 4px 18px rgba(255, 122, 0, 0.22);
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  color: #ffffff;
+  letter-spacing: 0.05em;
+}
+
+.btn-glass-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 28px rgba(255, 122, 0, 0.42);
+  filter: brightness(1.08);
+}
+
+.btn-glass-primary:active { transform: translateY(-1px) scale(0.99); }
+
+.btn-glass-secondary {
+  background: rgba(255, 255, 255, 0.065);
+  border: 1px solid rgba(255, 255, 255, 0.11);
+  color: #ffffff;
+  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.btn-glass-secondary:hover {
+  background: rgba(255, 255, 255, 0.11);
+  border-color: rgba(255, 255, 255, 0.20);
+  transform: translateY(-1px);
+}
+
+/* ─── Auth ─── */
+.auth-page {
+  position: relative;
+  isolation: isolate;
+  background: radial-gradient(circle at 12% 12%, rgba(255, 122, 0, .14), transparent 30%), radial-gradient(circle at 88% 88%, rgba(123, 44, 191, .2), transparent 34%), #09030f;
+}
+.auth-page::before { content: ''; position: absolute; inset: 0; z-index: -1; background-image: linear-gradient(rgba(255,255,255,.025) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.025) 1px, transparent 1px); background-size: 32px 32px; mask-image: linear-gradient(to bottom, black, transparent); }
+.auth-card { background: rgba(18, 10, 29, .82); border: 1px solid rgba(255,255,255,.12); box-shadow: 0 24px 80px rgba(0,0,0,.5), inset 0 1px rgba(255,255,255,.08); backdrop-filter: blur(28px) saturate(140%); }
+.auth-label { display: block; margin-bottom: .55rem; color: #aeb4c1; font-size: 10px; font-weight: 600; letter-spacing: .16em; line-height: 1.4; text-transform: uppercase; }
+.auth-input { width: 100%; border: 1px solid rgba(255,255,255,.12); border-radius: .75rem; background: rgba(255,255,255,.05); padding: .8rem .9rem; color: #fff; font-size: .875rem; font-weight: 400; line-height: 1.5; transition: border-color .25s ease, box-shadow .25s ease, background .25s ease; }
+.auth-input::placeholder { color: #78808f; }
+.auth-input:hover { border-color: rgba(255,255,255,.22); }
+.auth-input:focus { border-color: rgba(255,122,0,.7); background: rgba(255,255,255,.085); box-shadow: 0 0 0 3px rgba(255,122,0,.14); outline: none; }
+.auth-select { appearance: none; cursor: pointer; background-image: linear-gradient(45deg, transparent 50%, #ff7a00 50%), linear-gradient(135deg, #ff7a00 50%, transparent 50%); background-position: calc(100% - 18px) calc(50% - 2px), calc(100% - 13px) calc(50% - 2px); background-size: 5px 5px, 5px 5px; background-repeat: no-repeat; padding-right: 2.5rem; }
+.auth-select option { color: #fff; background: #160a22; }
+.auth-social-button { display: inline-flex; align-items: center; justify-content: center; gap: .5rem; border: 1px solid rgba(255,255,255,.14); border-radius: .75rem; background: rgba(255,255,255,.04); padding: .8rem; color: #e5e7eb; font-size: 11px; font-weight: 600; letter-spacing: .06em; transition: all .35s cubic-bezier(0.16, 1, 0.3, 1); }
+.auth-social-button:hover { border-color: rgba(255,122,0,.5); background: rgba(255,255,255,.085); transform: translateY(-1px); }
+
+/* ─── Panel privado: glass nocturno, mismo lenguaje que la tienda ─── */
+.admin-shell, .partner-shell, .seller-shell, .client-shell { min-height: 100vh; color: #f8fafc; background: transparent; }
+
+/* Override de clases Tailwind claras para convertirlas en glass nocturno */
+.admin-shell .bg-white,
+.partner-shell .bg-white,
+.seller-shell .bg-white,
+.client-shell .bg-white {
+  background: rgba(20, 10, 31, .72) !important;
+  backdrop-filter: blur(20px) saturate(135%);
+  -webkit-backdrop-filter: blur(20px) saturate(135%);
+  border-color: rgba(255,255,255,.12) !important;
+}
+
+.admin-shell .bg-luxury-off-white,
+.partner-shell .bg-luxury-off-white,
+.seller-shell .bg-luxury-off-white,
+.client-shell .bg-luxury-off-white { background: rgba(255,255,255,.06) !important; }
+
+.admin-shell .text-luxury-black,
+.partner-shell .text-luxury-black,
+.seller-shell .text-luxury-black,
+.client-shell .text-luxury-black { color: #f1f5f9 !important; }
+
+.admin-shell .text-gray-400, .admin-shell .text-gray-500,
+.partner-shell .text-gray-400, .partner-shell .text-gray-500,
+.seller-shell .text-gray-400, .seller-shell .text-gray-500,
+.client-shell .text-gray-400, .client-shell .text-gray-500 { color: #94a3b8 !important; }
+
+.admin-shell .border-luxury-silver,
+.partner-shell .border-luxury-silver,
+.seller-shell .border-luxury-silver,
+.client-shell .border-luxury-silver { border-color: rgba(255,255,255,.12) !important; }
+
+.admin-shell input, .admin-shell textarea, .admin-shell select,
+.partner-shell input, .partner-shell textarea, .partner-shell select,
+.seller-shell input, .seller-shell textarea, .seller-shell select,
+.client-shell input, .client-shell textarea, .client-shell select {
+  color: #fff !important;
+  background: rgba(255,255,255,.06) !important;
+  border-color: rgba(255,255,255,.14) !important;
+  border-radius: .75rem !important;
+  transition: border-color .25s ease, box-shadow .25s ease, background .25s ease;
+}
+
+.admin-shell input:focus, .admin-shell textarea:focus, .admin-shell select:focus,
+.partner-shell input:focus, .partner-shell textarea:focus, .partner-shell select:focus,
+.seller-shell input:focus, .seller-shell textarea:focus, .seller-shell select:focus,
+.client-shell input:focus, .client-shell textarea:focus, .client-shell select:focus {
+  border-color: rgba(255,122,0,.6) !important;
+  box-shadow: 0 0 0 3px rgba(255,122,0,.14) !important;
+  outline: none !important;
+}
+
+.admin-shell input::placeholder, .partner-shell input::placeholder, .seller-shell input::placeholder, .client-shell input::placeholder { color: rgba(255,255,255,.4) !important; }
+
+/* Botón primary de paneles — degradado corporativo */
+.admin-shell .bg-luxury-black,
+.partner-shell .bg-luxury-black,
+.seller-shell .bg-luxury-black,
+.client-shell .bg-luxury-black { background: linear-gradient(135deg, #ff7a00, #7b2cbf) !important; border: 1px solid rgba(255,255,255,.14) !important; }
+
+/* Headers de los paneles con cristal real */
+.partner-shell > header, .seller-shell > header, .client-shell > header {
+  background: linear-gradient(120deg, rgba(15,5,24,.96), rgba(34,10,26,.96)) !important;
+  border-color: rgba(255,122,0,.22) !important;
+  box-shadow: 0 10px 35px rgba(0,0,0,.38);
+  backdrop-filter: blur(20px);
+}
+.partner-shell > header .text-luxury-black, .seller-shell > header .text-luxury-black, .client-shell > header .text-luxury-black { color: #fff !important; }
+.partner-shell > header .text-gray-400, .seller-shell > header .text-gray-400, .client-shell > header .text-gray-400 { color: #cbd5e1 !important; }
+.partner-shell > header svg, .seller-shell > header svg, .client-shell > header svg { color: #ffb15c; }
+
+/* Tarjetas / secciones de paneles: glass con radio consistente + sombra sutil */
+.partner-shell main > section > div,
+.seller-shell main > section > div,
+.client-shell main > section > div {
+  border-radius: var(--radius-panel) !important;
+  border-color: rgba(255,255,255,.13) !important;
+  box-shadow: 0 16px 45px rgba(0,0,0,.2) !important;
+}
+
+.partner-shell button, .seller-shell button, .client-shell button, .admin-shell button { border-radius: .75rem; transition: all .4s cubic-bezier(0.16, 1, 0.3, 1); }
+.partner-shell button:not(:disabled):hover, .seller-shell button:not(:disabled):hover, .client-shell button:not(:disabled):hover, .admin-shell button:not(:disabled):hover { transform: translateY(-1px); }
+
+/* Detalles / acordeones (clase used in panels) */
+.admin-shell details, .partner-shell details, .seller-shell details {
+  border-radius: var(--radius-panel) !important;
+  background: rgba(20, 10, 31, .72);
+  backdrop-filter: blur(20px) saturate(135%);
+  -webkit-backdrop-filter: blur(20px) saturate(135%);
+  border-color: rgba(255,255,255,.12) !important;
+  box-shadow: 0 10px 30px rgba(0,0,0,.18) !important;
+}
+
+/* ─── Menu colapsable para paneles (CSS puro con detalles/summary) ─── */
+.panel-menu { transition: width .35s cubic-bezier(0.22, 1, 0.36, 1); }
+.panel-menu-toggle:hover { color: #ff7a00 !important; }
+
+.product-strip { display: flex; gap: 1rem; overflow-x: auto; overflow-y: hidden; padding: .25rem .1rem 1rem; scroll-snap-type: x mandatory; scrollbar-color: rgba(255,122,0,.55) transparent; }
+.product-strip__item { width: min(78vw, 272px); min-width: min(78vw, 272px); flex: 0 0 min(78vw, 272px); scroll-snap-align: start; }
+.product-strip__item > a { height: 100%; }
+@media (min-width: 640px) { .product-strip__item { width: 260px; min-width: 260px; flex-basis: 260px; } }
+
+.checkout-form h3, .checkout-form .text-gray-800, .checkout-form .text-gray-600 { color: #fff !important; }
+.checkout-form input { color: #fff; background: rgba(255,255,255,.075); border-color: rgba(255,255,255,.18); }
+.checkout-form input::placeholder { color: #aab2c1; }
+.checkout-form input:focus { border-color: #ff7a00; outline: none; box-shadow: 0 0 0 3px rgba(255,122,0,.16); }
+.checkout-form button:not(.btn-glass-primary) { border-color: rgba(255,255,255,.18); }
+
+@media (max-width: 639px) {
+  .admin-shell header, .partner-shell header, .seller-shell header, .client-shell header { padding: 1rem; gap: .75rem; align-items: flex-start; }
+  .admin-shell header > div:last-child > span, .partner-shell header > div:last-child > span, .seller-shell header > div:last-child > span, .client-shell header > div:last-child > span { display: none; }
+  .admin-shell .max-w-7xl { padding-left: 1rem; padding-right: 1rem; }
+  .admin-shell .flex.space-x-4 { overflow-x: auto; gap: 1rem; white-space: nowrap; }
+  .admin-shell table { min-width: 680px; }
+  .admin-shell .overflow-hidden:has(table) { overflow-x: auto; }
+  .partner-shell main, .seller-shell main, .client-shell main { padding-top: 2rem; padding-bottom: 2rem; }
+}
+
+/* ─── Scrollbar minimalista ─── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: rgba(0, 0, 0, 0.1); }
+::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.12); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(255, 122, 0, 0.5); }
+html { scrollbar-width: thin; scrollbar-color: rgba(255, 255, 255, 0.1) rgba(0, 0, 0, 0.1); scroll-behavior: smooth; }
+
+/* ─── Animaciones globales ─── */
+@keyframes slideInRight { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+@keyframes modalAppear { from { opacity: 0; transform: scale(0.97); } to { opacity: 1; transform: scale(1); } }
+@keyframes fadeUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+
+.animate-slide-in-right { animation: slideInRight 0.4s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
+.animate-modal-appear { animation: modalAppear 0.35s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
+.animate-fade-up { animation: fadeUp 0.45s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
+
+::selection { background: #ff7a00; color: #fff; }
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+
+/* Focus visible accesible */
+*:focus-visible { outline: 2px solid rgba(255, 122, 0, 0.6); outline-offset: 2px; border-radius: 4px; }

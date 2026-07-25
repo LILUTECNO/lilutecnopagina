@@ -1,0 +1,65 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() { return request.auth != null; }
+    function userDoc() { return get(/databases/$(database)/documents/users/$(request.auth.uid)); }
+    function isAdmin() { return signedIn() && userDoc().data.role == 'admin'; }
+    function isProvider() { return signedIn() && userDoc().data.role == 'proveedor'; }
+    function isDropshipper() { return signedIn() && userDoc().data.role == 'dropshipper'; }
+
+    match /users/{userId} {
+      allow read: if signedIn() && (request.auth.uid == userId || isAdmin());
+      // Accounts may only self-create as the least-privileged client role.
+      allow create: if signedIn() && request.auth.uid == userId &&
+        ((request.resource.data.role == 'cliente' && request.resource.data.status == 'approved') ||
+         (request.resource.data.role in ['proveedor', 'dropshipper'] && request.resource.data.status == 'pending'));
+      // Roles and approval status are administrator-owned fields.
+      allow update: if isAdmin() || (signedIn() && request.auth.uid == userId &&
+        !request.resource.data.diff(resource.data).affectedKeys().hasAny(['role', 'status']));
+      allow delete: if isAdmin();
+    }
+
+    match /products/{productId} {
+      allow read: if true;
+      allow create: if isAdmin() || (isProvider() && request.resource.data.providerId == request.auth.uid);
+      // Proveedor solo puede tocar precio_base (fuente de verdad). Los precios calculados
+      // y estado_rentabilidad los recalcula la Cloud Function (syncProductCategory).
+      // Otros campos (stock, summary, images, features) también los puede editar el proveedor.
+      // Restringido: price, precio_cliente_final, precio_dropshipper, precio_surtir_*,
+      //              is_*_manual, estado_rentabilidad — SOLO admin (vía Cloud Function).
+      allow update: if isAdmin()
+        || (isProvider() && resource.data.providerId == request.auth.uid
+            && request.resource.data.providerId == request.auth.uid
+            && !request.resource.data.diff(resource.data).affectedKeys().hasAny([
+              'price', 'old_price',
+              'precio_cliente_final', 'precio_dropshipper',
+              'precio_surtir_r1', 'precio_surtir_r2', 'precio_surtir_r3',
+              'is_cliente_final_manual', 'is_dropshipper_manual', 'is_surtir_manual',
+              'estado_rentabilidad'
+            ]));
+      allow delete: if isAdmin() || (isProvider() && resource.data.providerId == request.auth.uid);
+    }
+
+    match /categories/{categoryId} { allow read: if true; allow write: if isAdmin(); }
+    match /heroSlides/{slideId} { allow read: if true; allow write: if isAdmin(); }
+    match /settings/{settingId} { allow read: if signedIn(); allow write: if isAdmin(); }
+    match /coupons/{couponId} { allow read: if signedIn(); allow write: if isAdmin(); }
+    match /home_vitrina/{itemId} { allow read: if true; allow write: if isAdmin(); }
+
+    match /orders/{orderId} {
+      allow read: if signedIn() && (isAdmin() || resource.data.userId == request.auth.uid || resource.data.providerId == request.auth.uid || resource.data.dropshipperId == request.auth.uid);
+      // Orders are created only by the Cloud Function, which recalculates price and stock.
+      allow create: if false;
+      allow update, delete: if isAdmin();
+    }
+
+    match /favorites/{favoriteId} {
+      allow read, delete: if signedIn() && resource.data.userId == request.auth.uid;
+      allow create: if signedIn() && request.resource.data.userId == request.auth.uid;
+      allow update: if false;
+    }
+    match /carts/{userId} { allow read, write: if signedIn() && request.auth.uid == userId; }
+    match /notifications/{notificationId} { allow read: if signedIn() && resource.data.userId == request.auth.uid; allow create: if isAdmin(); }
+  }
+}

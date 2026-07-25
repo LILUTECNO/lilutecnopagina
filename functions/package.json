@@ -1,0 +1,10 @@
+{
+  "name": "lilutecno-functions",
+  "private": true,
+  "type": "module",
+  "engines": { "node": "20" },
+  "main": "lib/index.js",
+  "scripts": { "build": "tsc", "deploy": "firebase deploy --only functions" },
+  "dependencies": { "firebase-admin": "^12.7.0", "firebase-functions": "^7.3.0" },
+  "devDependencies": { "typescript": "^5.5.3" }
+}

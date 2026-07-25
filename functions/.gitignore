@@ -1,0 +1,10 @@
+# Local secrets — never commit
+.env
+.env.*
+!.env.example
+.secret.local
+*.local
+
+# Build output is deployable but not required in git
+lib/
+node_modules/

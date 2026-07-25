@@ -22,4 +22,11 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+# Secrets / env (never commit)
 .env
+.env.*
+!.env.example
+functions/.env
+functions/.env.*
+functions/.secret.local
+key-margenes.json

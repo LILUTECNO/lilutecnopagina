@@ -5,11 +5,10 @@ import { SearchIcon as NoResultsSearchIcon } from './Icons.tsx'; // Renamed to a
 
 interface ProductGridProps {
   products: Product[];
-  onProductClick: (product: Product) => void;
   onAddToCart: (product: Product) => void;
 }
 
-const ProductGrid: React.FC<ProductGridProps> = ({ products, onProductClick, onAddToCart }) => {
+const ProductGrid: React.FC<ProductGridProps> = ({ products, onAddToCart }) => {
   if (products.length === 0) {
     return (
       <div className="flex-1 text-center py-12">
@@ -30,7 +29,6 @@ const ProductGrid: React.FC<ProductGridProps> = ({ products, onProductClick, onA
           <ProductCard
             key={product.id}
             product={product}
-            onProductClick={onProductClick}
             onAddToCart={onAddToCart}
           />
         ))}

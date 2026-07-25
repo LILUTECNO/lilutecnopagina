@@ -73,3 +73,35 @@ To access the admin panel, you'll need valid credentials that are verified again
 - `npm run build`: Builds the application for production.
 - `npm run lint`: Lints the TypeScript files for errors.
 - `npm run preview`: Serves the production build locally for preview.
+
+## Producción: Firebase y pagos
+
+Antes de desplegar, habilita Email/Password, Google y Facebook en Firebase Authentication. Para Facebook debes configurar el App ID y App Secret de Meta y registrar el dominio de producción como URL autorizada.
+
+El checkout seguro depende de las Cloud Functions incluidas en `functions/`. Instala sus dependencias, configura el secreto de Wompi y despliega las funciones, reglas, índices y Hosting:
+
+```bash
+cd functions && npm install && npm run build && cd ..
+firebase functions:secrets:set WOMPI_PRIVATE_KEY
+firebase deploy --only functions,firestore:rules,firestore:indexes,storage,hosting
+```
+
+Configura en el panel de Wompi la URL HTTPS de `wompiWebhook` publicada por Firebase. El navegador nunca debe recibir la llave privada de Wompi.
+
+## Despliegue y Configuración
+
+### 1. Configuración de Secretos (`.env`)
+
+- **Local:** Crea un archivo `functions/.env` con las variables `WOMPI_PRIVATE_KEY` y `WOMPI_EVENTS_SECRET`.
+- **Seguridad:** Este archivo está excluido del control de versiones (`.gitignore`). **NUNCA** lo subas al repositorio.
+- **Producción:** Las variables se inyectan automáticamente en el despliegue a través del script envoltorio.
+
+### 2. Cómo desplegar funciones
+
+Para subir cambios a Firebase de forma segura, usa siempre el script canónico:
+
+```bash
+npm run firebase:deploy:functions
+```
+
+Este script compila el código, aplica parches necesarios al CLI de forma temporal y despliega utilizando la cuenta de servicio autorizada.

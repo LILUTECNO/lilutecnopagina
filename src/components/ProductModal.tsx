@@ -44,37 +44,37 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, onClose, onAddToCa
 
   return (
     <div 
-      className="fixed inset-0 bg-black bg-opacity-60 backdrop-blur-sm z-[100] flex items-center justify-center p-4 transition-opacity duration-300 ease-in-out"
+      className="fixed inset-0 bg-black/70 backdrop-blur-md z-[100] flex items-center justify-center p-4 transition-opacity duration-300 ease-in-out"
       onClick={onClose}
     >
       <div
-        className="bg-white rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto transform transition-all duration-300 ease-in-out scale-95 opacity-0 animate-modal-appear [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none']"
+        className="glass-panel rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto transform transition-all duration-300 ease-in-out scale-95 opacity-0 animate-modal-appear [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none']"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="p-4 sm:p-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-10">
+        <div className="p-5 sm:p-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-12">
             {/* Image Gallery */}
             <div className="flex flex-col">
-              <div className="relative w-full aspect-square bg-gray-100 rounded-lg shadow-lg border border-gray-200 overflow-hidden">
+              <div className="relative w-full aspect-square bg-white/[.04] rounded-2xl shadow-lg border border-white/10 overflow-hidden">
                 <img
                   id="main-modal-image"
                   src={mainImage}
                   alt={product.name}
-                  className="w-full h-full object-contain"
+                  className="w-full h-full object-contain transition-transform duration-700 hover:scale-[1.03]"
                   onError={(e) => (e.currentTarget.src = placeholderImage)}
                 />
               </div>
               
               {product.images.length > 1 && (
-                <div className="thumbnail-gallery flex items-center gap-2 mt-4 overflow-x-auto pb-2">
+                <div className="thumbnail-gallery flex items-center gap-2 mt-5 overflow-x-auto pb-2">
                   {product.images.map((img, idx) => (
                     <img
                       key={idx}
                       src={img}
                       loading="lazy"
                       alt={`Miniatura ${idx + 1} de ${product.name}`}
-                      className={`w-16 h-16 object-cover rounded-md cursor-pointer border-2 transition-all duration-200
-                        ${mainImage === img ? 'border-orange-500 shadow-md scale-105' : 'border-transparent hover:border-orange-300'}`}
+                      className={`w-16 h-16 object-cover rounded-xl cursor-pointer border-2 transition-all duration-300
+                        ${mainImage === img ? 'border-orange-500 shadow-md scale-105' : 'border-white/10 hover:border-orange-300/60 hover:scale-105'}`}
                       onClick={() => setMainImage(img)}
                       onError={(e) => (e.currentTarget.src = "https://picsum.photos/100/100?random=" + product.id + idx)}
                     />
@@ -83,11 +83,11 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, onClose, onAddToCa
               )}
               
                {techFeatures.length > 0 && (
-                <div className="mt-4 pt-4 border-t border-gray-200 flex items-center justify-center gap-x-6 gap-y-2 text-gray-500 flex-wrap">
+                <div className="mt-5 pt-5 border-t border-white/10 flex items-center justify-center gap-x-6 gap-y-2 text-slate-400 flex-wrap">
                   {techFeatures.map((feature) => (
-                    <div key={feature.name} className="flex flex-col items-center gap-1" title={feature.name}>
-                       <feature.icon className="h-8 w-8 text-gray-700"/>
-                       <span className="text-xs font-semibold">{feature.name}</span>
+                    <div key={feature.name} className="flex flex-col items-center gap-1.5 transition-all duration-300 hover:text-orange-400" title={feature.name}>
+                       <feature.icon className="h-8 w-8 text-orange-400/90"/>
+                       <span className="text-[10px] font-semibold uppercase tracking-[0.18em]">{feature.name}</span>
                     </div>
                   ))}
                 </div>
@@ -95,12 +95,12 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, onClose, onAddToCa
             </div>
 
             {/* Product Details */}
-            <div className="space-y-4 md:space-y-6 flex flex-col">
+            <div className="space-y-5 md:space-y-7 flex flex-col">
                <div className="flex items-start justify-between">
-                <h2 className="text-2xl md:text-3xl font-extrabold text-gray-900 tracking-tight pr-4">{product.name}</h2>
+                <h2 className="font-montserrat text-2xl md:text-3xl font-bold text-white tracking-tight pr-4 leading-tight">{product.name}</h2>
                 <button
                   onClick={onClose}
-                  className="p-2 -mt-2 -mr-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-full transition-colors flex-shrink-0"
+                  className="p-2 -mt-2 -mr-2 text-slate-400 hover:text-white hover:bg-white/10 rounded-full transition-all duration-300 flex-shrink-0 hover:scale-110"
                   aria-label="Cerrar modal"
                 >
                   <CloseIcon className="h-6 w-6" />
@@ -109,14 +109,14 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, onClose, onAddToCa
 
               {/* Price Section */}
               <div className="space-y-2">
-                <p className="text-sm font-medium text-gray-500">Precio</p>
+                <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-slate-400">Precio</p>
                 <div className="flex items-end gap-3 flex-wrap">
-                  <p className="text-4xl font-extrabold text-red-600 tracking-tight">{formatPrice(product.price)}</p>
+                  <p className="text-4xl font-bold text-white tracking-tight">{formatPrice(product.price)}</p>
                   {hasOffer && (
-                    <p className="text-xl font-medium text-gray-400 line-through">{formatPrice(product.old_price!)}</p>
+                    <p className="text-xl font-light text-slate-500 line-through">{formatPrice(product.old_price!)}</p>
                   )}
                   {hasOffer && (
-                    <div className="ml-auto flex items-center gap-1 rounded-full bg-red-100 px-3 py-1 text-sm font-bold text-red-700">
+                    <div className="ml-auto flex items-center gap-1 rounded-full bg-gradient-to-r from-[#ff7a00]/20 to-[#7b2cbf]/20 border border-[#ff7a00]/40 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.2em] text-orange-300">
                       <FireIcon className="h-4 w-4" />
                       <span>OFERTA</span>
                     </div>
@@ -126,8 +126,8 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, onClose, onAddToCa
 
               {/* Availability Section */}
               <div className="space-y-2">
-                <p className="text-sm font-medium text-gray-500">Disponibilidad</p>
-                <div className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-sm font-bold ${isAvailable ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
+                <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-slate-400">Disponibilidad</p>
+                <div className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-bold uppercase tracking-[0.15em] ${isAvailable ? 'bg-green-500/15 text-green-400 border border-green-500/30' : 'bg-red-500/15 text-red-400 border border-red-500/30'}`}>
                   {isAvailable ? <CheckCircleIcon className="w-4 h-4" /> : <XCircleIcon className="w-4 h-4" />}
                   {isAvailable ? `${product.stock} disponibles` : 'Agotado'}
                 </div>
@@ -136,16 +136,16 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, onClose, onAddToCa
               {/* Summary Section */}
               {product.summary && (
                 <div className="space-y-2">
-                  <p className="text-sm font-medium text-gray-500">Resumen</p>
-                  <p className="text-gray-700 text-base">{product.summary}</p>
+                  <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-slate-400">Resumen</p>
+                  <p className="text-slate-300 text-sm leading-relaxed">{product.summary}</p>
                 </div>
               )}
               
               {/* Features Section */}
               {product.features && product.features.length > 0 && (
-                <div className="space-y-2 border-t border-gray-200 pt-4">
-                  <h3 className="text-sm font-medium text-gray-500">Características Principales:</h3>
-                  <ul className="list-disc list-inside space-y-1 text-gray-600 marker:text-orange-500">
+                <div className="space-y-3 border-t border-white/10 pt-5">
+                  <h3 className="text-[10px] font-semibold uppercase tracking-[0.25em] text-slate-400">Características Principales</h3>
+                  <ul className="list-disc list-inside space-y-1.5 text-slate-300 text-sm marker:text-orange-400 leading-relaxed">
                     {product.features.map((feature, idx) => <li key={idx}>{feature}</li>)}
                   </ul>
                 </div>
@@ -156,7 +156,7 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, onClose, onAddToCa
                 {isAvailable && (
                     <button
                         onClick={handleAddToCart}
-                        className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-bold py-3 px-4 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-orange-400 focus:ring-opacity-75"
+                        className="w-full flex items-center justify-center gap-2 btn-glass-primary font-semibold py-3.5 px-4 rounded-xl shadow-md hover:shadow-lg tracking-[0.12em] text-[10px] uppercase"
                     >
                         <ShoppingCartIcon className="w-5 h-5" />
                         Agregar al Carrito
@@ -166,10 +166,10 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, onClose, onAddToCa
                     href={isAvailable ? wompiDynamicURL : generateWhatsAppMessageForProduct(product)}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className={`w-full flex items-center justify-center gap-2 font-bold py-3 px-4 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-opacity-75
+                    className={`w-full flex items-center justify-center gap-2 font-semibold py-3.5 px-4 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-opacity-75 text-[10px] uppercase tracking-[0.12em]
                         ${isAvailable 
-                            ? 'bg-blue-500 hover:bg-blue-600 text-white focus:ring-blue-400' 
-                            : 'bg-green-500 hover:bg-green-600 text-white focus:ring-green-400'}`}
+                            ? 'glass-card border border-white/10 text-white hover:border-orange-400/40 hover:bg-white/[.08] focus:ring-orange-400' 
+                            : 'border border-[#25D366]/30 bg-[#25D366]/10 backdrop-blur-md text-[#25D366] hover:bg-[#25D366]/20 focus:ring-green-400'}`}
                 >
                     {isAvailable ? '💳 Pagar ahora' : <><WhatsAppIcon className="w-5 h-5" /> CONSULTAR POR WHATSAPP</>}
                 </a>
