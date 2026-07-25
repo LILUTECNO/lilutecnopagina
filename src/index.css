@@ -993,3 +993,124 @@ input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; marg
    refuerzo color del summary-line text-white en light. */
 [data-theme="light"] .seller-shell summary.text-white,
 [data-theme="light"] .seller-shell summary .text-white{ color:var(--text-0); }
+
+/* =========================================================
+   PROVEEDOR — `.partner-shell` (ProviderDashboard)
+   Gestión de inventario, pedidos asignados y billetera. Tab-bar activa:
+   border-b-2 border-orange-400 → gradiente cyan→violeta; texto activo cyan
+   en dark, text-0 en light. Igual que Admin en densidad.
+   ========================================================= */
+
+/* Wordmark 'LILU TECNO' → --font-wordmark */
+[data-theme] .partner-shell .font-montserrat{
+  font-family:var(--font-wordmark); letter-spacing:.06em; color:var(--text-0);
+}
+[data-theme="dark"] .partner-shell .font-montserrat{
+  color:var(--accent-cyan); text-shadow:0 0 16px rgba(47,230,255,.4);
+}
+
+/* H2 page-titles → --font-display (Chakra Petch). KPIs numéricos en
+   .font-montserrat text-3xl → display también (leme scifi) con tabular-nums. */
+[data-theme] .partner-shell h2.font-montserrat,
+[data-theme] .partner-shell p.font-montserrat{
+  font-family:var(--font-display);
+  line-height:1.14; letter-spacing:.02em;
+  font-variant-numeric:tabular-nums;
+  color:var(--text-0);
+}
+[data-theme="dark"] .partner-shell h2.font-montserrat,
+[data-theme="dark"] .partner-shell p.font-montserrat{
+  text-shadow:0 0 14px rgba(47,230,255,.3);
+}
+
+/* Nombres de producto (card labels) siguen en --font-body medium.
+   H3 cards: */
+[data-theme] .partner-shell h3.font-montserrat{
+  font-family:var(--font-body); font-weight:600; color:var(--text-0);
+}
+
+/* Tab-bar activa: border-b-2 border-orange-400 text-orange-400 →
+   indicador gradiente cyan→violeta + color cyan en dark. */
+[data-theme="dark"] .partner-shell .border-b-2.border-orange-400{
+  border-image:linear-gradient(90deg, var(--accent-cyan), var(--accent-violet)) 1;
+  color:var(--accent-cyan);
+}
+[data-theme="light"] .partner-shell .border-b-2.border-orange-400{
+  border-color:var(--accent-violet);
+  color:var(--text-0);
+}
+[data-theme="dark"] .partner-shell .border-orange-400{ border-color:var(--accent-cyan); }
+[data-theme="light"] .partner-shell .border-orange-400{ border-color:var(--accent-amber); }
+
+/* Light-mode text recoloreo */
+[data-theme="light"] .partner-shell .text-white{ color:var(--text-0); }
+[data-theme="light"] .partner-shell .text-slate-300{ color:var(--text-1); }
+[data-theme="light"] .partner-shell .text-slate-400,
+[data-theme="light"] .partner-shell .text-slate-500{ color:var(--text-muted); }
+[data-theme="light"] .partner-shell .text-gray-400,
+[data-theme="light"] .partner-shell .text-gray-500{ color:var(--text-muted); }
+[data-theme="light"] .partner-shell .text-orange-300,
+[data-theme="light"] .partner-shell .text-orange-400,
+[data-theme="light"] .partner-shell .text-orange-500{ color:var(--accent-amber); }
+[data-theme="light"] .partner-shell .text-green-400{ color:color-mix(in srgb, #16a34a 92%, #000); }
+[data-theme="light"] .partner-shell .text-red-400,
+[data-theme="light"] .partner-shell .text-red-500,
+[data-theme="light"] .partner-shell .text-red-600{ color:#E11D48; }
+
+/* Bordes */
+[data-theme="light"] .partner-shell .border-white\/10,
+[data-theme="light"] .partner-shell .border-white\/12,
+[data-theme="light"] .partner-shell .border-white\/15{ border-color:var(--border-2); }
+[data-theme="light"] .partner-shell [class*="border-white\/\["]{ border-color:var(--border-2); }
+[data-theme="light"] .partner-shell .border-luxury-gold,
+[data-theme="light"] .partner-shell .border-luxury-silver{ border-color:var(--border-2); }
+[data-theme="light"] .partner-shell .border-orange-400\/40,
+[data-theme="light"] .partner-shell .hover\:border-orange-400\/25:hover,
+[data-theme="light"] .partner-shell .hover\:border-orange-400\/30:hover,
+[data-theme="light"] .partner-shell .hover\:border-orange-400\/40:hover{
+  border-color:color-mix(in srgb, var(--accent-amber) 40%, transparent);
+}
+[data-theme="light"] .partner-shell .hover\:border-white\/20:hover{ border-color:var(--border-2); }
+[data-theme="light"] .partner-shell .hover\:border-green-400\/30:hover{
+  border-color:color-mix(in srgb, #16a34a 30%, transparent);
+}
+[data-theme="light"] .partner-shell .hover\:border-red-400\/40:hover{ border-color:color-mix(in srgb, #E11D48 40%, transparent); }
+
+/* Superficies */
+[data-theme="light"] .partner-shell .bg-white\/5,
+[data-theme="light"] .partner-shell .bg-white\/10{ background:rgba(120,90,200,.05); }
+[data-theme="light"] .partner-shell [class*="bg-white\/\["]{ background:rgba(120,90,200,.05); }
+[data-theme="light"] .partner-shell .hover\:bg-white\/5:hover,
+[data-theme="light"] .partner-shell .hover\:bg-white\/10:hover,
+[data-theme="light"] .partner-shell .hover\:bg-white\/95:hover{ background:var(--surface-2); }
+[data-theme="light"] .partner-shell .hover\:bg-white:hover{ background:var(--surface-2); }
+[data-theme="light"] .partner-shell .bg-black\/70,
+[data-theme="light"] .partner-shell .bg-black\/80{ background:rgba(20,20,30,.5); }
+
+/* Estado semántico (rojo=eliminar/error) en dark red neón, light rojo marcado */
+[data-theme="dark"] .partner-shell .bg-red-500{ background:#FF5C7A; color:#fff; }
+[data-theme="light"] .partner-shell .bg-red-500{ background:#E11D48; color:#fff; }
+[data-theme="light"] .partner-shell .hover\:bg-red-400\/10:hover{ background:rgba(225,29,72,.10); }
+[data-theme="light"] .partner-shell .hover\:bg-orange-400\/10:hover{ background:rgba(249,115,22,.10); }
+
+/* Hover */
+[data-theme="dark"] .partner-shell .hover\:text-orange-400:hover,
+[data-theme="dark"] .partner-shell .hover\:text-orange-300:hover{ color:var(--accent-cyan); }
+[data-theme="light"] .partner-shell .hover\:text-orange-300:hover,
+[data-theme="light"] .partner-shell .hover\:text-orange-400:hover{ color:var(--accent-amber); }
+[data-theme="light"] .partner-shell .hover\:text-white:hover{ color:var(--text-0); }
+[data-theme="light"] .partner-shell .hover\:text-red-400:hover{ color:#E11D48; }
+
+/* Inputs */
+[data-theme] .partner-shell .focus\:border-orange-400\/60:focus{
+  border-color:var(--accent-cyan); box-shadow:var(--ring-focus); outline:none;
+}
+[data-theme] .partner-shell input,
+[data-theme] .partner-shell select,
+[data-theme] .partner-shell textarea{
+  color:var(--text-0); background:var(--surface-2); border-color:var(--border-1);
+}
+
+/* Spinner (border-luxury-gold) → gradiente cyan→violeta */
+[data-theme="dark"] .partner-shell .animate-spin{ border-color:var(--accent-violet); border-top-color:transparent; }
+[data-theme="light"] .partner-shell .animate-spin{ border-color:var(--accent-amber); border-top-color:transparent; }
