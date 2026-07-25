@@ -619,7 +619,97 @@ input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; marg
 [data-theme="light"] .glass-panel .text-white{ color:var(--text-0); }
 [data-theme="light"] .glass-panel .text-slate-400{ color:var(--text-muted); }
 [data-theme="light"] .glass-panel .text-orange-400{ color:var(--accent-amber); }
-[data-theme="light"] .glass-panel .border-white\/10,
-[data-theme="light"] .glass-panel .border-white\/\[.08\]{ border-color:var(--border-2); }
+[data-theme="light"] .glass-panel .border-white\/10{ border-color:var(--border-2); }
+[data-theme="light"] .glass-panel [class*="border-white\/\["]{ border-color:var(--border-2); }
 [data-theme="light"] .glass-panel .bg-white\/5,
 [data-theme="light"] .glass-panel .bg-white\/10{ background:rgba(120,90,200,.05); }
+[data-theme="light"] .glass-panel [class*="bg-white\/\["]{ background:rgba(120,90,200,.05); }
+
+/* =========================================================
+   CLIENTE — `.client-shell` (ClientDashboard)
+   Las utilidades Tailwind oscuras (text-white/slate-N/orange-N,
+   bg-white/X, border-white/X) recolorean en light; los estados
+   semánticos (verde=activo, ámbar=pendiente) se conservan y se
+   oscurecen levemente con color-mix para AA en claro.
+   ========================================================= */
+
+/* Header del cliente (logo + breadcrumb) — wordmark → --font-wordmark */
+[data-theme] .client-shell header .font-montserrat{
+  font-family:var(--font-wordmark); letter-spacing:.06em;
+}
+[data-theme="dark"] .client-shell header .font-montserrat{
+  color:var(--accent-cyan); text-shadow:0 0 16px rgba(47,230,255,.4);
+}
+[data-theme="light"] .client-shell header .font-montserrat{ color:var(--text-0); }
+
+/* Texto en light (legible sobre glass) */
+[data-theme="light"] .client-shell .text-white{ color:var(--text-0); }
+[data-theme="light"] .client-shell .text-slate-400,
+[data-theme="light"] .client-shell .text-slate-500{ color:var(--text-muted); }
+[data-theme="light"] .client-shell .text-slate-300{ color:var(--text-1); }
+[data-theme="light"] .client-shell .text-black{ color:var(--text-0); }
+[data-theme="light"] .client-shell .text-orange-400,
+[data-theme="light"] .client-shell .text-orange-300{ color:var(--accent-amber); }
+[data-theme="light"] .client-shell .text-orange-100{ color:var(--accent-amber); }
+[data-theme="light"] .client-shell .text-green-400{ color:color-mix(in srgb, #16a34a 92%, #000); }
+[data-theme="light"] .client-shell .text-amber-400{ color:var(--accent-amber); }
+[data-theme="light"] .client-shell .text-red-400{ color:#E11D48; }
+[data-theme="light"] .client-shell .text-purple-300{ color:var(--accent-violet); }
+
+/* Bordes en light */
+[data-theme="light"] .client-shell .border-white\/10,
+[data-theme="light"] .client-shell .border-white\/12,
+[data-theme="light"] .client-shell .border-white\/15{ border-color:var(--border-2); }
+[data-theme="light"] .client-shell [class*="border-white\/\["]{ border-color:var(--border-2); }
+[data-theme="light"] .client-shell .border-orange-400\/25,
+[data-theme="light"] .client-shell .hover\:border-orange-400\/25:hover{
+  border-color:color-mix(in srgb, var(--accent-amber) 35%, transparent);
+}
+
+/* Superficies bg-white/X y bg-black/X en light */
+[data-theme="light"] .client-shell .bg-white\/\[.02\],
+[data-theme="light"] .client-shell .bg-white\/\[.03\],
+[data-theme="light"] .client-shell .bg-white\/\[.04\],
+[data-theme="light"] .client-shell .bg-white\/\[.06\]{ background:var(--surface-2); }
+[data-theme="light"] .client-shell [class*="bg-white\/\["]{ background:var(--surface-2); }
+[data-theme="light"] .client-shell .bg-white\/5,
+[data-theme="light"] .client-shell .bg-white\/10{ background:rgba(120,90,200,.06); }
+[data-theme="light"] .client-shell .bg-black\/5,
+[data-theme="light"] .client-shell .bg-black\/10,
+[data-theme="light"] .client-shell .bg-black\/20,
+[data-theme="light"] .client-shell .bg-black\/40{ background:rgba(20,20,30,.05); }
+
+/* Ring del avatar (ring-white/10) → borde lavanda en light */
+[data-theme="light"] .client-shell .ring-white\/10{ --tw-ring-color:var(--border-1); }
+[data-theme="light"] .client-shell .border-white\/12{ border-color:var(--border-1); }
+
+/* Estados semánticos (activo/pendiente) — preservar color pero asegurar
+   contraste en claro oscureciendo el foreground. */
+[data-theme="light"] .client-shell .bg-green-500\/15,
+[data-theme="light"] .client-shell .bg-green-500{ background:rgba(34,197,94,.15); }
+[data-theme="light"] .client-shell .border-green-500\/30{ border-color:rgba(34,197,94,.4); }
+[data-theme="light"] .client-shell .bg-amber-500\/15,
+[data-theme="light"] .client-shell .bg-amber-500{ background:rgba(217,119,6,.15); }
+[data-theme="light"] .client-shell .border-amber-500\/30{ border-color:rgba(217,119,6,.45); }
+[data-theme="light"] .client-shell .bg-green-400\/40{ background:rgba(22,163,74,.4); }
+
+/* Hover bg-white/5 (iconos) → soft lavanda */
+[data-theme="light"] .client-shell .hover\:bg-white\/5:hover{ background:rgba(120,90,200,.06); }
+[data-theme="light"] .client-shell .hover\:text-white:hover{ color:var(--text-0); }
+[data-theme="light"] .client-shell .hover\:text-orange-300:hover,
+[data-theme="light"] .client-shell .hover\:text-orange-400:hover{ color:var(--accent-amber); }
+
+/* Spinner (border-orange-400) */
+[data-theme="dark"] .client-shell .animate-spin{ border-color:var(--accent-amber); border-top-color:transparent; }
+[data-theme="light"] .client-shell .animate-spin{ border-color:var(--accent-violet); border-top-color:transparent; }
+
+/* Links naranjas (Comenzar a comprar →) → cian/violet */
+[data-theme="dark"] .client-shell a.text-orange-400:hover{ color:var(--accent-cyan); }
+[data-theme="light"] .client-shell a.text-orange-400:hover{ color:var(--accent-violet); }
+
+/* H3 page-title (Historial de Pedidos, Mi perfil) → --font-display */
+[data-theme] .client-shell h3.font-montserrat{
+  font-family:var(--font-display);
+  line-height:1.12; letter-spacing:.02em; color:var(--text-0);
+}
+[data-theme="dark"] .client-shell h3.font-montserrat{ text-shadow:0 0 14px rgba(47,230,255,.3); }
