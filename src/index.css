@@ -713,3 +713,165 @@ input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; marg
   line-height:1.12; letter-spacing:.02em; color:var(--text-0);
 }
 [data-theme="dark"] .client-shell h3.font-montserrat{ text-shadow:0 0 14px rgba(47,230,255,.3); }
+
+/* =========================================================
+   ADMIN — `.admin-shell` (MasterAdminDashboard, AdminAddProductPage,
+   AdminEditProductPage, AdminDashboardPage)
+   El Admin originalmente esta diseñado para LIGHT (bg-white, text-luxury-black);
+   los paneles base ya convierten `bg-white` en glass oscuro sobre dark. Aqui
+   refinaomos tab-bar, KPIs semanticos (green/amber/red) y el boton bg-luxury-black.
+   ========================================================= */
+
+/* Wordmark del admin (font-montserrat) → --font-wordmark */
+[data-theme] .admin-shell .font-montserrat{
+  font-family:var(--font-wordmark); letter-spacing:.06em; color:var(--text-0);
+}
+[data-theme="dark"] .admin-shell .font-montserrat{
+  color:var(--accent-cyan); text-shadow:0 0 16px rgba(47,230,255,.4);
+}
+
+/* H3 page-title / titulos de seccion → --font-display (Chakra Petch).
+   Ojo: los nombres en tablas/cards NO son h3.font-montserrat; los labels de
+   tabla son <th> y se quedan en --font-body. */
+[data-theme] .admin-shell h3.font-montserrat{
+  font-family:var(--font-display);
+  line-height:1.14; letter-spacing:.02em; color:var(--text-0);
+}
+[data-theme="dark"] .admin-shell h3.font-montserrat{ text-shadow:0 0 14px rgba(47,230,255,.3); }
+
+/* Tab-bar: el indicador activo (border-b-2 border-luxury-gold) → gradiente
+   cyan→violeta; el texto activo cyan en dark, text-0 en light. */
+[data-theme="dark"] .admin-shell .border-b-2.border-luxury-gold{
+  border-image:linear-gradient(90deg, var(--accent-cyan), var(--accent-violet)) 1;
+  color:var(--accent-cyan);
+}
+[data-theme="light"] .admin-shell .border-b-2.border-luxury-gold{
+  border-color:var(--accent-violet);
+  color:var(--text-0);
+}
+[data-theme="dark"] .admin-shell .border-luxury-gold{
+  border-color:var(--accent-cyan);
+}
+[data-theme="light"] .admin-shell .border-luxury-gold{ border-color:var(--accent-amber); }
+
+/* Texto犀利/light recoloreo */
+[data-theme="light"] .admin-shell .text-white{ color:var(--text-0); }
+[data-theme="light"] .admin-shell .text-slate-400,
+[data-theme="light"] .admin-shell .text-slate-500{ color:var(--text-muted); }
+[data-theme="light"] .admin-shell .text-gray-300,
+[data-theme="light"] .admin-shell .text-gray-400,
+[data-theme="light"] .admin-shell .text-gray-500{ color:var(--text-muted); }
+[data-theme="light"] .admin-shell .text-orange-300,
+[data-theme="light"] .admin-shell .text-orange-400,
+[data-theme="light"] .admin-shell .text-orange-500,
+[data-theme="light"] .admin-shell .text-orange-600{ color:var(--accent-amber); }
+[data-theme="light"] .admin-shell .text-purple-400,
+[data-theme="light"] .admin-shell .text-purple-600{ color:var(--accent-violet); }
+[data-theme="light"] .admin-shell .text-amber-500,
+[data-theme="light"] .admin-shell .text-amber-700{ color:var(--accent-amber); }
+[data-theme="light"] .admin-shell .text-green-600,
+[data-theme="light"] .admin-shell .text-green-700{ color:color-mix(in srgb, #16a34a 92%, #000); }
+[data-theme="light"] .admin-shell .text-red-400,
+[data-theme="light"] .admin-shell .text-red-600,
+[data-theme="light"] .admin-shell .text-red-700{ color:#E11D48; }
+
+/* Bordes utility */
+[data-theme="light"] .admin-shell .border-white\/10,
+[data-theme="light"] .admin-shell .border-white\/12,
+[data-theme="light"] .admin-shell .border-white\/15{ border-color:var(--border-2); }
+[data-theme="light"] .admin-shell [class*="border-white\/\["]{ border-color:var(--border-2); }
+[data-theme="light"] .admin-shell .border-luxury-off-white,
+[data-theme="light"] .admin-shell .border-luxury-silver,
+[data-theme="light"] .admin-shell .border-gray-300{ border-color:var(--border-2); }
+[data-theme="light"] .admin-shell .border-orange-400{ border-color:var(--accent-amber); }
+
+/* Superficies: en light, los bg-white ya son glass claro (commit 3);
+   mantén los bg-luxury-off-white y los gris-100 como soft surface-2 */
+[data-theme="light"] .admin-shell .bg-gray-100{ background:var(--surface-2); }
+[data-theme="light"] .admin-shell [class*="bg-white\/\["]{ background:rgba(120,90,200,.05); }
+[data-theme="light"] .admin-shell .hover\:bg-white\/10:hover,
+[data-theme="light"] .admin-shell .hover\:bg-luxury-off-white:hover,
+[data-theme="light"] .admin-shell .hover\:bg-luxury-off-white\/50:hover{ background:var(--surface-2); }
+[data-theme="light"] .admin-shell .hover\:bg-gray-100:hover{ background:var(--surface-3, var(--surface-2)); }
+[data-theme="light"] .admin-shell .hover\:bg-green-50:hover{ background:rgba(34,197,94,.12); }
+[data-theme="light"] .admin-shell .hover\:bg-red-50:hover{ background:rgba(225,29,72,.12); }
+[data-theme="light"] .admin-shell .hover\:text-white:hover{ color:var(--text-0); }
+[data-theme="light"] .admin-shell .hover\:text-luxury-black:hover{ color:var(--text-0); }
+[data-theme="light"] .admin-shell .hover\:text-orange-300:hover,
+[data-theme="light"] .admin-shell .hover\:text-orange-500:hover,
+[data-theme="light"] .admin-shell .hover\:text-orange-600:hover{ color:var(--accent-amber); }
+[data-theme="light"] .admin-shell .hover\:text-purple-600:hover{ color:var(--accent-violet); }
+[data-theme="light"] .admin-shell .hover\:text-red-400:hover,
+[data-theme="light"] .admin-shell .hover\:text-red-600:hover{ color:#E11D48; }
+
+/* bg-black/75 (overlay de confirmación en dark) → tono más oscuro en light */
+[data-theme="light"] .admin-shell .bg-black,
+[data-theme="light"] .admin-shell .bg-black\/75{ background:rgba(20,20,30,.5); }
+
+/* Estado semántico: verde éxito, ámbar/amarillo pendiente, rojo error.
+   Oscurecemos los foreground en light para AA. */
+[data-theme] .admin-shell .bg-green-50{ background:rgba(34,197,94,.14); }
+[data-theme] .admin-shell .bg-amber-50{ background:rgba(217,119,6,.14); }
+[data-theme] .admin-shell .bg-red-50{ background:rgba(225,29,72,.12); }
+[data-theme] .admin-shell .border-green-200,
+[data-theme] .admin-shell .border-green-500{ border-color:color-mix(in srgb, #16a34a 45%, transparent); }
+[data-theme] .admin-shell .border-amber-200{ border-color:color-mix(in srgb, var(--accent-amber) 45%, transparent); }
+[data-theme] .admin-shell .border-red-200,
+[data-theme] .admin-shell .border-red-500{ border-color:color-mix(in srgb, #E11D48 45%, transparent); }
+[data-theme="dark"] .admin-shell .bg-red-500\/90,
+[data-theme="dark"] .admin-shell .bg-red-500\/80,
+[data-theme="dark"] .admin-shell .hover\:bg-red-500:hover{
+  background:#FF5C7A; color:#fff;
+}
+[data-theme="light"] .admin-shell .bg-red-500\/90,
+[data-theme="light"] .admin-shell .bg-red-500\/80,
+[data-theme="light"] .admin-shell .hover\:bg-red-500:hover{
+  background:#E11D48; color:#fff;
+}
+[data-theme] .admin-shell .bg-luxury-black\/40,
+[data-theme] .admin-shell [class*="bg-luxury-black"]{ background:color-mix(in srgb, var(--accent-violet) 15%, var(--surface-2)); }
+
+/* Inputs focus:border-orange-400/60 → cyan ring */
+[data-theme] .admin-shell .focus\:border-orange-400\/60:focus{
+  border-color:var(--accent-cyan);
+  box-shadow:var(--ring-focus);
+  outline:none;
+}
+[data-theme="dark"] .admin-shell input,
+[data-theme="dark"] .admin-shell select,
+[data-theme="dark"] .admin-shell textarea{
+  color:var(--text-0);
+  background:var(--surface-2);
+  border-color:var(--border-1);
+}
+[data-theme="light"] .admin-shell input,
+[data-theme="light"] .admin-shell select,
+[data-theme="light"] .admin-shell textarea{
+  background:var(--surface-2);
+  color:var(--text-0);
+  border-color:var(--border-1);
+}
+
+/* Tablas densas (prioridad: legibilidad) */
+[data-theme] .admin-shell table{
+  background:transparent;
+  border-collapse:separate;
+  border-spacing:0;
+  color:var(--text-0);
+}
+[data-theme] .admin-shell table thead th{
+  background:var(--surface-2);
+  color:var(--text-1);
+  text-transform:uppercase;
+  font:700 12px/1 var(--font-body);
+  letter-spacing:.04em;
+  padding:.7em .8em;
+}
+[data-theme] .admin-shell table tbody td{
+  padding:.7em .8em;
+  border-bottom:1px solid var(--border-1);
+  color:var(--text-0);
+}
+[data-theme] .admin-shell table tbody tr:hover{
+  background:var(--surface-2);
+}
