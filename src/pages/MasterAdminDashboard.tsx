@@ -17,7 +17,7 @@ import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { db, storage } from '../firebaseConfig';
 import { toast } from 'react-hot-toast';
 import { Product } from '../types';
-import { ShieldAlert, Users, Package, Settings, Tag, Plus, Edit, Trash, Upload, LogOut, Check, X, RefreshCw, FileDown, AlertTriangle, TrendingUp, Images, ChevronUp, ChevronDown, Truck, Wallet } from 'lucide-react';
+import { ShieldAlert, Users, Package, Settings, Tag, Plus, Edit, Trash, Upload, LogOut, Check, X, RefreshCw, FileDown, AlertTriangle, TrendingUp, Images, Truck, Wallet } from 'lucide-react';
 import { downloadCatalogPdf } from '../utils/catalogPdf';
 import LogisticsPanel from '../components/LogisticsPanel';
 import PayoutsPanel from '../components/PayoutsPanel';
@@ -25,6 +25,7 @@ import ConfiguracionGlobalMargenes from '../components/ConfiguracionGlobalMargen
 import EditorPreciosProducto from '../components/EditorPreciosProducto';
 import ThemeToggleTRON from '../components/ThemeToggleTRON';
 import VitrinaHomeManager from '../components/admin/VitrinaHomeManager';
+import BannerEditor from '../components/admin/BannerEditor';
 import { fetchConfigMargenes } from '../services/margenes';
 import { ConfigMargenesGlobal, DEFAULT_CONFIG_MARGENES } from '../types';
 
@@ -85,16 +86,6 @@ const MasterAdminDashboard: React.FC = () => {
   // Category Form states
   const [newCatName, setNewCatName] = useState('');
   const [creatingCat, setCreatingCat] = useState(false);
-  const [bannerTitle, setBannerTitle] = useState('');
-  const [bannerDescription, setBannerDescription] = useState('');
-  const [bannerLink, setBannerLink] = useState('#catalogo');
-  const [bannerImage, setBannerImage] = useState<File | null>(null);
-  const [bannerMobileImage, setBannerMobileImage] = useState<File | null>(null);
-  const [banners, setBanners] = useState<{ id: string; title: string; description?: string; ctaHref?: string; image?: string; mobileImage?: string; order?: number }[]>([]);
-  const [savingBanner, setSavingBanner] = useState(false);
-  const [editingBannerId, setEditingBannerId] = useState<string | null>(null);
-  const [existingBannerImage, setExistingBannerImage] = useState('');
-  const [existingBannerMobileImage, setExistingBannerMobileImage] = useState('');
 
   // --- Sistema de 3 Niveles de Precios (v3) ---
   const [configMargenes, setConfigMargenes] = useState<ConfigMargenesGlobal>({ ...DEFAULT_CONFIG_MARGENES });
@@ -113,7 +104,7 @@ const MasterAdminDashboard: React.FC = () => {
         fetchProducts(), fetchOrders(),
         fetchUsers(),
         fetchCategories(),
-        fetchSettings(), fetchCoupons(), fetchBanners()
+        fetchSettings(), fetchCoupons()
       ]);
     } catch (error) {
       console.error(error);
@@ -179,8 +170,6 @@ const MasterAdminDashboard: React.FC = () => {
     }
   };
   const fetchCoupons = async () => { const snapshot = await getDocs(collection(db, 'coupons')); setCoupons(snapshot.docs.map(item => ({ id: item.id, ...item.data() } as { id: string; code: string; type: 'shipping' | 'percent'; value?: number; active?: boolean }))); };
-  const fetchBanners = async () => { const snapshot = await getDocs(collection(db, 'heroSlides')); setBanners(snapshot.docs.map(item => ({ id: item.id, ...item.data() } as { id: string; title: string; description?: string; ctaHref?: string; image?: string; mobileImage?: string; order?: number })).sort((a, b) => (a.order || 0) - (b.order || 0))); };
-  const moveBanner = async (index: number, direction: -1 | 1) => { const next = index + direction; if (next < 0 || next >= banners.length) return; const ordered = [...banners]; [ordered[index], ordered[next]] = [ordered[next], ordered[index]]; await Promise.all(ordered.map((item, position) => updateDoc(doc(db, 'heroSlides', item.id), { order: position }))); fetchBanners(); };
   const saveShipping = async () => { await setDoc(doc(db, 'settings', 'shipping'), { bogota: shippingBogota === '' ? 10000 : Number(shippingBogota), other: shippingOther === '' ? 15000 : Number(shippingOther) }); toast.success('Tarifas de envío guardadas.'); };
   
   const saveCoupon = async () => {
@@ -231,89 +220,6 @@ const MasterAdminDashboard: React.FC = () => {
     } catch (error) {
       console.error(error);
       toast.error('No fue posible generar el catálogo PDF.');
-    }
-  };
- 
-  const handleCreateBanner = async (event: React.FormEvent) => {
-    event.preventDefault();
-    setSavingBanner(true);
-    try {
-      let image = existingBannerImage || '';
-      let mobileImage = existingBannerMobileImage || '';
-      let uploadWarnings = 0;
-      
-      if (bannerImage) {
-        try {
-          const upload = await uploadBytes(ref(storage, `heroSlides/${Date.now()}_${bannerImage.name}`), bannerImage);
-          image = await getDownloadURL(upload.ref);
-        } catch (uploadError: any) {
-          console.error('Storage upload error (desktop):', uploadError?.code || uploadError);
-          uploadWarnings++;
-          const code = String(uploadError?.code || '');
-          if (code.includes('unauthorized') || code.includes('permission')) toast.error('Permiso de Storage denegado para banner de escritorio.');
-          else if (code.includes('cors')) toast.error('CORS de Storage bloqueando el banner de escritorio.');
-          else toast.error('No fue posible subir el banner de escritorio.');
-        }
-      }
-      if (bannerMobileImage) {
-        try {
-          const upload = await uploadBytes(ref(storage, `heroSlides/mobile_${Date.now()}_${bannerMobileImage.name}`), bannerMobileImage);
-          mobileImage = await getDownloadURL(upload.ref);
-        } catch (uploadError: any) {
-          console.error('Storage upload error (mobile):', uploadError?.code || uploadError);
-          uploadWarnings++;
-          const code = String(uploadError?.code || '');
-          if (code.includes('unauthorized') || code.includes('permission')) toast.error('Permiso de Storage denegado para banner móvil.');
-          else if (code.includes('cors')) toast.error('CORS de Storage bloqueando el banner móvil.');
-          else toast.error('No fue posible subir el banner móvil.');
-        }
-      }
-      
-      // Si en edición no se subió nada NUEVO y no había previo, abortamos para no guardar banner sin imagen.
-      if (!image && !mobileImage) {
-        toast.error('No se pudo guardar el banner: sin imagen de portada. Revisa Storage.');
-        setSavingBanner(false);
-        return;
-      }
-      
-      const bannerData = {
-        title: bannerTitle,
-        description: bannerDescription,
-        ctaLabel: 'Explorar catálogo',
-        ctaHref: bannerLink || '#catalogo',
-        image,
-        mobileImage,
-        active: true,
-      };
-      
-      if (editingBannerId) {
-        await updateDoc(doc(db, 'heroSlides', editingBannerId), bannerData);
-        if (uploadWarnings > 0) toast('Banner actualizado, pero algunas imágenes fallaron al subir.', { icon: '⚠️' });
-        else toast.success('Banner actualizado.');
-        setEditingBannerId(null);
-        setExistingBannerImage('');
-        setExistingBannerMobileImage('');
-      } else {
-        await addDoc(collection(db, 'heroSlides'), {
-          ...bannerData,
-          order: Date.now(),
-          createdAt: new Date().toISOString()
-        });
-        if (uploadWarnings > 0) toast('Banner publicado, pero algunas imágenes fallaron al subir.', { icon: '⚠️' });
-        else toast.success('Banner publicado en el carrusel.');
-      }
-      
-      setBannerTitle('');
-      setBannerDescription('');
-      setBannerLink('#catalogo');
-      setBannerImage(null);
-      setBannerMobileImage(null);
-      fetchBanners();
-    } catch (error: any) {
-      console.error(error);
-      toast.error('No fue posible guardar el banner: ' + (error?.message || String(error)));
-    } finally {
-      setSavingBanner(false);
     }
   };
 
@@ -548,12 +454,12 @@ const MasterAdminDashboard: React.FC = () => {
       <header className="border-b border-white/10 bg-[#100719]/92 text-white px-6 py-4 flex justify-between items-center backdrop-blur-2xl">
         <div className="flex items-center space-x-3">
           <ShieldAlert className="h-6 w-6 text-luxury-gold" />
-          <span className="font-montserrat text-lg font-black tracking-widest text-white">
+          <span className="wordmark font-montserrat text-lg font-black tracking-widest text-white">
             LILUTECNO MAESTRO
           </span>
         </div>
         <div className="flex items-center space-x-6">
-          <span className="text-xs uppercase tracking-wider text-luxury-gold font-semibold">
+          <span className="role-label text-xs uppercase tracking-wider text-luxury-gold font-semibold">
             PANEL DE ADMINISTRADOR MAESTRO
           </span>
           <ThemeToggleTRON label="Cambiar entre modo día y noche" size={36} />
@@ -1027,95 +933,7 @@ const MasterAdminDashboard: React.FC = () => {
             )}
 
             {activeTab === 'banners' && (
-              <div className="max-w-3xl bg-white border border-luxury-silver p-6 shadow-luxury">
-                <h3 className="font-montserrat text-lg font-light text-luxury-black">
-                  {editingBannerId ? 'Editar Banner Principal' : 'Nuevo banner principal'}
-                </h3>
-                <p className="mt-2 text-xs leading-relaxed text-gray-500">Al publicar, aparecerá automáticamente en el carrusel de inicio. La imagen se optimiza desde Storage y el botón puede llevar al catálogo o a una promoción.</p>
-                <form onSubmit={handleCreateBanner} className="mt-6 space-y-4">
-                  <input required value={bannerTitle} onChange={e => setBannerTitle(e.target.value)} placeholder="Título de la promoción" className="w-full rounded border border-luxury-silver bg-luxury-off-white px-3 py-2 text-sm font-light text-luxury-black" />
-                  <textarea required value={bannerDescription} onChange={e => setBannerDescription(e.target.value)} placeholder="Descripción breve" rows={3} className="w-full rounded border border-luxury-silver bg-luxury-off-white px-3 py-2 text-sm font-light text-luxury-black" />
-                  <input value={bannerLink} onChange={e => setBannerLink(e.target.value)} placeholder="#catalogo o enlace de promoción" className="w-full rounded border border-luxury-silver bg-luxury-off-white px-3 py-2 text-sm font-light text-luxury-black" />
-                  
-                  {existingBannerImage && (
-                    <div className="text-xs text-gray-500 space-y-2">
-                      <p>Imagen Escritorio actual:</p>
-                      <img src={existingBannerImage} alt="" className="h-20 w-36 object-cover border border-luxury-silver" />
-                    </div>
-                  )}
-                  {existingBannerMobileImage && (
-                    <div className="text-xs text-gray-500 space-y-2">
-                      <p>Imagen Móvil actual:</p>
-                      <img src={existingBannerMobileImage} alt="" className="h-20 w-16 object-cover border border-luxury-silver" />
-                    </div>
-                  )}
-
-                  <div className="grid gap-3 sm:grid-cols-2">
-                    <label className="text-xs text-gray-500">
-                      Escritorio — recomendado 1920 × 700 px
-                      <input type="file" accept="image/png,image/jpeg,image/webp" onChange={e => setBannerImage(e.target.files?.[0] || null)} className="mt-2 block w-full text-xs" />
-                    </label>
-                    <label className="text-xs text-gray-500">
-                      Móvil — recomendado 750 × 900 px
-                      <input type="file" accept="image/png,image/jpeg,image/webp" onChange={e => setBannerMobileImage(e.target.files?.[0] || null)} className="mt-2 block w-full text-xs" />
-                    </label>
-                  </div>
-                  
-                  <div className="flex gap-2">
-                    <button disabled={savingBanner} className="border border-luxury-gold bg-luxury-black px-5 py-2.5 text-xs font-medium uppercase tracking-widest text-white disabled:opacity-50">
-                      {savingBanner ? 'Guardando...' : (editingBannerId ? 'Actualizar banner' : 'Publicar banner')}
-                    </button>
-                    {editingBannerId && (
-                      <button type="button" onClick={() => {
-                        setEditingBannerId(null);
-                        setBannerTitle('');
-                        setBannerDescription('');
-                        setBannerLink('#catalogo');
-                        setExistingBannerImage('');
-                        setExistingBannerMobileImage('');
-                      }} className="border border-gray-300 px-5 py-2.5 text-xs uppercase tracking-widest text-gray-500 hover:bg-gray-100">
-                        Cancelar
-                      </button>
-                    )}
-                  </div>
-                </form>
-                <div className="mt-8 border-t border-luxury-silver pt-5">
-                  <h4 className="text-xs font-semibold uppercase tracking-widest text-gray-400">Banners activos</h4>
-                  <div className="mt-4 space-y-3">
-                    {banners.map((banner, index) => (
-                      <div key={banner.id} className="flex items-center gap-3 rounded-xl border border-luxury-silver p-3">
-                        <span className="text-xs text-orange-400">#{index + 1}</span>
-                        {banner.image && <img src={banner.image} alt="" className="h-12 w-20 rounded object-cover" />}
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium text-luxury-black truncate">{banner.title}</p>
-                          {banner.description && <p className="text-xs text-gray-400 truncate">{banner.description}</p>}
-                        </div>
-                        <button onClick={() => moveBanner(index, -1)} disabled={index === 0} className="text-slate-400 disabled:opacity-30"><ChevronUp className="h-4 w-4" /></button>
-                        <button onClick={() => moveBanner(index, 1)} disabled={index === banners.length - 1} className="text-slate-400 disabled:opacity-30"><ChevronDown className="h-4 w-4" /></button>
-                        <button onClick={() => {
-                          setEditingBannerId(banner.id);
-                          setBannerTitle(banner.title);
-                          setBannerDescription(banner.description || '');
-                          setBannerLink(banner.ctaHref || '#catalogo');
-                          setExistingBannerImage(banner.image || '');
-                          setExistingBannerMobileImage(banner.mobileImage || '');
-                        }} className="text-orange-300 hover:text-orange-500 transition-colors" title="Editar Banner">
-                          <Edit className="h-4 w-4" />
-                        </button>
-                        <button onClick={async () => {
-                          if (window.confirm('¿Eliminar este banner?')) {
-                            await deleteDoc(doc(db, 'heroSlides', banner.id));
-                            fetchBanners();
-                            toast.success('Banner eliminado.');
-                          }
-                        }} className="text-red-400 hover:text-red-600 transition-colors">
-                          <Trash className="h-4 w-4" />
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
+              <BannerEditor />
             )}
 
             {/* 5. LOGÍSTICA — Kanban de órdenes pagadas con rutas, validación foto, guías */}
