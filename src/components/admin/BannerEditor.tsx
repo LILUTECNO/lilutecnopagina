@@ -43,6 +43,7 @@ import {
   validateBannerDraft,
   hasValidationErrors,
   CATALOG_ANCHOR,
+  categoryName,
   type Banner,
   type BannerCta,
   type BannerImageClick,
@@ -756,12 +757,55 @@ const BannerEditor: React.FC = () => {
               banner={previewBanner}
               view="preview"
               floatingCorner={floatingCorner}
+              categories={categories}
+              products={allProducts}
             />
           </PreviewFrame>
 
+          {/* ===== persistent honest destination line (Q3 pattern) ===== */}
+          {(() => {
+            const dest = ctaDestination;
+            const enabled = ctaEnabled;
+            if (!enabled) {
+              return (
+                <p className="text-xs text-gray-500">
+                  Botón desactivado. Al publicar, el banner omite el botón.
+                </p>
+              );
+            }
+            if (dest.linkType === 'product') {
+              const p = allProducts.find((x) => x.id === dest.productId);
+              const destLabel = p
+                ? `Ficha: ${p.name}`
+                : 'Ficha de producto (selecciona uno)';
+              return (
+                <p className="text-xs text-gray-500">
+                  Destino del botón: <span className="text-luxury-black">{destLabel}</span>.
+                </p>
+              );
+            }
+            if (dest.linkType === 'category') {
+              const name = dest.categoryId && dest.categoryId !== '__catalog__'
+                ? categoryName(dest.categoryId, categories)
+                : undefined;
+              const destLabel = name ? `#catálogo (+ filtro ‘${name}’)` : '#catálogo';
+              return (
+                <p className="text-xs text-gray-500">
+                  Destino del botón: <span className="text-luxury-black">{destLabel}</span>.
+                </p>
+              );
+            }
+            const destLabel = dest.href || '(sin enlace)';
+            return (
+              <p className="text-xs text-gray-500">
+                Destino del botón: <span className="text-luxury-black">{destLabel}</span>.
+              </p>
+            );
+          })()}
+
           <p className="text-xs text-gray-500">
-            La vista previa refleja el carrusel en tiempo real. El botón y los enlaces NO
-            navegan aquí (solo se simulan dentro del marco).
+            En la vista previa el botón no navega (para no salir del editor); al publicar,
+            llevará al destino indicado arriba.
           </p>
         </div>
       </div>
