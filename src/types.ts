@@ -47,6 +47,95 @@ export interface ConfigMargenesGlobal {
   margen_minimo_bloqueo: number;
 }
 
+// ============================================================
+// PROVIDER BRANDING (PDF Catalog v2) — additive sub-object
+// Persisted THROUGH the existing provider save path (users/{uid}).
+// Legacy providers with NO branding load clean defaults via
+// normalizeProviderBranding() (see utils/providerBranding.ts).
+// Never renames/removes existing UserState fields.
+// ============================================================
+
+export type CatalogTemplateId = 'tron-night' | 'minimal-light' | 'editorial';
+
+export interface BrandPalette {
+  /** Primary brand hue (accents, ticks, primary text on light) */
+  primary: string;
+  /** Secondary brand hue (supporting accents, pills) */
+  secondary: string;
+  /** Tertiary accent (small UI accents, decorative ticks) */
+  accent: string;
+  /** Ink: the canvas's primary text color (dark on light templates, light on dark templates) */
+  ink: string;
+  /** Paper: the canvas background color */
+  paper: string;
+}
+
+export interface BrandContact {
+  web?: string;
+  email?: string;
+  phone?: string;
+  whatsapp?: string;
+  address?: string;
+}
+
+export interface ProviderBranding {
+  templateId: CatalogTemplateId;
+  palette: BrandPalette;
+  /** Reachable URL or empty/undefined (text wordmark fallback) */
+  logoUrl?: string;
+  /** Fallback to provider's existing name/storeName field when absent */
+  companyName?: string;
+  /** One-line tagline shown on cover/back */
+  tagline?: string;
+  contact?: BrandContact;
+}
+
+/** Per-template default palettes — single source of truth for normalize + preset reset. */
+export const TEMPLATE_DEFAULT_PALETTES: Record<CatalogTemplateId, BrandPalette> = {
+  'minimal-light': {
+    primary: '#111827',
+    secondary: '#6B7280',
+    accent: '#B45309',
+    ink: '#1F2937',
+    paper: '#FFFFFF',
+  },
+  'tron-night': {
+    primary: '#2FE6FF',
+    secondary: '#B06BFF',
+    accent: '#FFB65C',
+    ink: '#EAFBFF',
+    paper: '#07070F',
+  },
+  editorial: {
+    primary: '#1A1A1A',
+    secondary: '#8A5A12',
+    accent: '#8A5A12',
+    ink: '#1A1A1A',
+    paper: '#F7F4EE',
+  },
+};
+
+/** Curated preset palettes selectable per template (applies all 5 roles in one click). */
+export const TEMPLATE_PRESET_PALETTES: Record<CatalogTemplateId, Array<{ name: string; palette: BrandPalette }>> = {
+  'minimal-light': [
+    { name: 'Nieve', palette: { primary: '#111827', secondary: '#6B7280', accent: '#B45309', ink: '#1F2937', paper: '#FFFFFF' } },
+    { name: 'Grafito', palette: { primary: '#0F172A', secondary: '#475569', accent: '#0E7E89', ink: '#0F172A', paper: '#F1F5F9' } },
+    { name: 'Cálido', palette: { primary: '#7C2D12', secondary: '#B45309', accent: '#9A6A12', ink: '#1F2937', paper: '#FFFBF5' } },
+  ],
+  'tron-night': [
+    { name: 'Tron Night', palette: { primary: '#2FE6FF', secondary: '#B06BFF', accent: '#FFB65C', ink: '#EAFBFF', paper: '#07070F' } },
+    { name: 'Neon Mint', palette: { primary: '#34D399', secondary: '#22D3EE', accent: '#A78BFA', ink: '#ECFEFF', paper: '#0A0F0D' } },
+    { name: 'Magenta Hot', palette: { primary: '#F472B6', secondary: '#A855F7', accent: '#FBBF24', ink: '#FDF2F8', paper: '#12060F' } },
+  ],
+  editorial: [
+    { name: 'Marfil', palette: { primary: '#1A1A1A', secondary: '#8A5A12', accent: '#8A5A12', ink: '#1A1A1A', paper: '#F7F4EE' } },
+    { name: 'Pizarra', palette: { primary: '#1F2937', secondary: '#4B5563', accent: '#9A6A12', ink: '#1F2937', paper: '#E5E1D6' } },
+    { name: 'Borgoña', palette: { primary: '#7C1D1D', secondary: '#92400E', accent: '#92400E', ink: '#1F2937', paper: '#F5EFE6' } },
+  ],
+};
+
+export const DEFAULT_CATALOG_TEMPLATE: CatalogTemplateId = 'minimal-light';
+
 export const DEFAULT_CONFIG_MARGENES: ConfigMargenesGlobal = {
   porcentaje_cliente_final: 50,
   porcentaje_dropshipper: 30,

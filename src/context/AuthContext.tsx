@@ -11,6 +11,7 @@ import {
 } from 'firebase/auth';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { auth, db } from '../firebaseConfig';
+import type { ProviderBranding } from '../types';
 
 export interface UserState {
   uid: string;
@@ -24,6 +25,13 @@ export interface UserState {
   address?: string;
   logoUrl?: string;
   createdAt?: string;
+  /**
+   * PDF Catalog v2 — additive provider branding sub-object.
+   * Persisted THROUGH the existing provider save path (setDoc/updateDoc on
+   * users/{uid}); never a new collection/endpoint. Legacy providers without
+   * this field load clean defaults via normalizeProviderBranding().
+   */
+  branding?: ProviderBranding;
 }
 
 interface AuthContextType {
