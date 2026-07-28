@@ -19,6 +19,8 @@ import { toast } from 'react-hot-toast';
 import { Product } from '../types';
 import { ShieldAlert, Users, Package, Settings, Tag, Plus, Edit, Trash, Upload, LogOut, Check, X, RefreshCw, FileDown, AlertTriangle, TrendingUp, Images, Truck, Wallet } from 'lucide-react';
 import { downloadCatalogPdf } from '../utils/catalogPdf';
+import { buildPlatformCatalogBrand } from '../utils/platformBrand';
+import type { ProviderBranding } from '../types';
 import LogisticsPanel from '../components/LogisticsPanel';
 import PayoutsPanel from '../components/PayoutsPanel';
 import ConfiguracionGlobalMargenes from '../components/ConfiguracionGlobalMargenes';
@@ -213,13 +215,30 @@ const MasterAdminDashboard: React.FC = () => {
     }
   };
  
+  const [downloadingCatalog, setDownloadingCatalog] = useState(false);
+  const [catalogProgress, setCatalogProgress] = useState<{ done: number; total: number } | null>(null);
+
   const handleDownloadStoreCatalog = async () => {
+    if (downloadingCatalog) return;
+    setDownloadingCatalog(true);
+    setCatalogProgress({ done: 0, total: products.length || 0 });
     try {
-      await downloadCatalogPdf(products, 'catalogo-completo-lilu-tecno.pdf', 'Catálogo completo de tienda');
+      // ADMIN run: brand = PLATFORM (LILU + Tron Night web tokens snapshot);
+      // template FORCED to 'tron-night'; palette FORCED to Tron Night web tokens
+      // (mapped into the dark scheme). The admin has NO branding editor;
+      // the platform identity is the fixed, signed mark here.
+      const platformBrand: ProviderBranding = buildPlatformCatalogBrand();
+      await downloadCatalogPdf(products, 'catalogo-completo-lilu-tecno.pdf', {
+        brand: platformBrand,
+        onProgress: (done, total) => setCatalogProgress({ done, total }),
+      });
       toast.success('El catálogo completo fue generado.');
     } catch (error) {
       console.error(error);
       toast.error('No fue posible generar el catálogo PDF.');
+    } finally {
+      setDownloadingCatalog(false);
+      setCatalogProgress(null);
     }
   };
 
@@ -569,8 +588,15 @@ const MasterAdminDashboard: React.FC = () => {
             <Wallet className="h-4 w-4" />
             <span>Pagos (Martes/Viernes)</span>
           </button>
-          <button onClick={handleDownloadStoreCatalog} className="ml-auto flex items-center gap-2 self-start border border-luxury-gold px-3 py-2 text-[10px] uppercase tracking-widest text-luxury-black hover:bg-white">
-            <FileDown className="h-4 w-4" /> Catálogo PDF
+          <button
+            onClick={handleDownloadStoreCatalog}
+            disabled={downloadingCatalog}
+            className="ml-auto flex items-center gap-2 self-start border border-luxury-gold px-3 py-2 text-[10px] uppercase tracking-widest text-luxury-black hover:bg-white disabled:opacity-60"
+          >
+            <FileDown className="h-4 w-4" />
+            {downloadingCatalog
+              ? `Preparando catálogo… ${catalogProgress?.done ?? 0}/${catalogProgress?.total ?? products.length}`
+              : 'Catálogo PDF'}
           </button>
         </div>
 

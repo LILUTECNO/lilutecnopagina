@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { collection, query, where, getDocs, addDoc, updateDoc, doc, deleteDoc, onSnapshot, orderBy } from 'firebase/firestore';
@@ -9,6 +9,9 @@ import { Product } from '../types';
 import type { Order, PayoutBatch } from '../types';
 import { Package, Plus, Trash, Edit, Upload, LogOut, LayoutGrid, FileDown, Truck, Camera, Wallet, Boxes } from 'lucide-react';
 import { downloadCatalogPdf } from '../utils/catalogPdf';
+import { normalizeProviderBranding, cleanupBrandingForSave } from '../utils/providerBranding';
+import type { ProviderBranding } from '../types';
+import BrandingEditor from '../components/provider/BrandingEditor';
 import logo from '../assets/images/lilutecnologo.png';
 import ThemeToggleTRON from '../components/ThemeToggleTRON';
 
@@ -85,6 +88,18 @@ const ProviderDashboard: React.FC = () => {
     return () => { unsub(); unsub2(); };
   }, [currentUser]);
   const saveBrand = async () => { if (!currentUser) return; try { await updateDoc(doc(db, 'users', currentUser.uid), brand); toast.success('Datos de marca actualizados.'); } catch { toast.error('No fue posible guardar los datos de marca.'); } };
+  /**
+   * P1 — persist the branding sub-object THROUGH the existing save path (the
+   * SAME updateDoc on users/{uid}), without touching unrelated fields.
+   * Read-modify-write: only `branding` is written; logoUrl stays as the source
+   * of truth (the BrandingEditor reads logoUrl from currentUser.logoUrl).
+   */
+  const saveBranding = async (next: ProviderBranding) => {
+    if (!currentUser) return;
+    const cleaned = cleanupBrandingForSave(next);
+    await updateDoc(doc(db, 'users', currentUser.uid), { branding: cleaned });
+  };
+  const brandingInit = useMemo(() => normalizeProviderBranding(currentUser), [currentUser]);
   const handleLogoSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -138,17 +153,32 @@ const ProviderDashboard: React.FC = () => {
     }
   };
 
+  const [downloadingCatalog, setDownloadingCatalog] = useState(false);
+  const [catalogProgress, setCatalogProgress] = useState<{ done: number; total: number; phase: string } | null>(null);
+
   const handleDownloadCatalog = async () => {
+    if (downloadingCatalog) return;
+    setDownloadingCatalog(true);
+    setCatalogProgress({ done: 0, total: products.length || 0, phase: 'images' });
     try {
-      await downloadCatalogPdf(products, `catalogo-${currentUser?.uid || 'proveedor'}.pdf`, {
-        title: `Catálogo · ${brand.storeName || currentUser?.storeName || 'Proveedor'}`,
+      // Provider run = normalize(current user) updated with the in-memory brand
+      // draft + logoUrl, then BRAND is the protagonist + LILU signature discreet.
+      const catalogBrand: ProviderBranding = {
+        ...brandingInit,
         logoUrl: logoUrl || undefined,
-        storeName: brand.storeName || currentUser?.storeName || 'Proveedor',
+        companyName: brand.storeName || brandingInit.companyName,
+      };
+      await downloadCatalogPdf(products, `catalogo-${currentUser?.uid || 'proveedor'}.pdf`, {
+        brand: catalogBrand,
+        onProgress: (done, total, phase) => setCatalogProgress({ done, total, phase: phase || 'render' }),
       });
       toast.success('Tu catálogo PDF se descargó con los datos actualizados.');
     } catch (error) {
       console.error(error);
       toast.error('No fue posible generar el catálogo. Intenta nuevamente.');
+    } finally {
+      setDownloadingCatalog(false);
+      setCatalogProgress(null);
     }
   };
 
@@ -362,6 +392,26 @@ const ProviderDashboard: React.FC = () => {
             </div>
           </div>
           <button onClick={saveBrand} className="mt-5 rounded-xl border border-orange-400/40 px-5 py-2.5 text-[10px] uppercase tracking-[0.18em] text-orange-400 hover:bg-orange-400/10 font-semibold transition-colors duration-300">Guardar datos de marca</button>
+
+          {/* P1 — BrandingEditor (new). Mounts inside this same brand <details>
+               panel (REGION LOCK respected: header spans ~305-325 untouched).
+               Saves `branding` THROUGH saveBranding (the same updateDoc on
+               users/{uid}); never touches unrelated profile fields. */}
+          <div className="mt-8 border-t border-white/10 pt-6">
+            <h3 className="mb-4 font-montserrat text-base font-light text-white tracking-tight">Editor de identidad de catálogo</h3>
+            <BrandingEditor
+              initialBranding={brandingInit}
+              previewProducts={products.slice(0, 6)}
+              logoUrl={logoUrl}
+              logoPreview={logoPreview}
+              onLogoSelect={handleLogoSelect}
+              onLogoUpload={handleLogoUpload}
+              uploadingLogo={uploadingLogo}
+              logoInputRef={logoInputRef}
+              onSave={saveBranding}
+              existingContacts={{ phone: brand.phone, address: brand.address, storeName: brand.storeName }}
+            />
+          </div>
         </details>
 
         {/* Sub-pestañas */}
@@ -407,8 +457,17 @@ const ProviderDashboard: React.FC = () => {
             <p className="text-xs text-slate-400 font-light mt-2 leading-relaxed">Controla tus productos disponibles, stock y sube nuevo material.</p>
           </div>
           <div className="flex flex-wrap gap-3">
-            <button onClick={handleDownloadCatalog} className="flex items-center space-x-2 px-4 py-2.5 rounded-xl text-[10px] font-semibold uppercase tracking-[0.18em] text-white border border-white/15 hover:border-orange-400/40 hover:bg-white/[.05] transition-all duration-300 hover:scale-[1.02]">
-              <FileDown className="h-4 w-4" /><span>Descargar catálogo PDF</span>
+            <button
+              onClick={handleDownloadCatalog}
+              disabled={downloadingCatalog}
+              className="flex items-center space-x-2 px-4 py-2.5 rounded-xl text-[10px] font-semibold uppercase tracking-[0.18em] text-white border border-white/15 hover:border-orange-400/40 hover:bg-white/[.05] transition-all duration-300 hover:scale-[1.02] disabled:opacity-60 disabled:hover:scale-100"
+            >
+              <FileDown className="h-4 w-4" />
+              <span>
+                {downloadingCatalog
+                  ? `Preparando catálogo… ${catalogProgress?.done ?? 0}/${catalogProgress?.total ?? products.length}`
+                  : 'Descargar catálogo PDF'}
+              </span>
             </button>
             <button onClick={() => { resetForm(); setShowAddModal(true); }} className="flex items-center space-x-2 px-5 py-2.5 rounded-xl text-[10px] font-semibold uppercase tracking-[0.18em] text-white btn-glass-primary">
               <Plus className="h-4 w-4" /><span>Añadir Producto</span>
