@@ -29,19 +29,25 @@ export const ensurePdfFonts = async (): Promise<void> => {
   if (__fontsRegistered) return;
   const { Font } = await import('@react-pdf/renderer');
 
-  const safeRegister = async (family: string, src: string, fontWeight: 400 | 500 | 700) => {
+  // Font.register replaces the entire family; so register each family ONCE
+  // with all its weights in the `fonts` array (calling it twice for the same
+  // family silently drops the first registration's weights, which breaks
+  // templates that ask for weight 500 and only 700 survives).
+  const registerFamily = (family: string, fonts: Array<{ src: string; fontWeight: 400 | 500 | 700; fontStyle?: 'normal' | 'italic' }>) => {
     try {
-      Font.register({ family, fonts: [{ src, fontWeight, fontStyle: 'normal' }] });
+      Font.register({ family, fonts: fonts.map((f) => ({ src: f.src, fontWeight: f.fontWeight, fontStyle: f.fontStyle || 'normal' })) });
     } catch {
       /* tolerate registration errors; renderer falls back to Helvetica */
     }
   };
 
-  await Promise.all([
-    safeRegister('CatalogDisplay', 'https://fonts.gstatic.com/s/sairasemicondensed/v15/U9MM6c-2-nnJkHxyCjRcnMHcWVWV1cWRRXf_S8MW.ttf', 500),
-    safeRegister('CatalogDisplay', 'https://fonts.gstatic.com/s/sairasemicondensed/v15/U9MM6c-2-nnJkHxyCjRcnMHcWVWV1cWRRXe3TcMW.ttf', 700),
-    safeRegister('CatalogBody', 'https://fonts.gstatic.com/s/inter/v20/UcCO3FwrK3iLTeHuS_nVMrMxCp50SjIw2boKoduKmMEVuLyfMZg.ttf', 400),
-    safeRegister('CatalogBody', 'https://fonts.gstatic.com/s/inter/v20/UcCO3FwrK3iLTeHuS_nVMrMxCp50SjIw2boKoduKmMEVuFuYMZg.ttf', 700),
+  registerFamily('CatalogDisplay', [
+    { src: 'https://fonts.gstatic.com/s/sairasemicondensed/v15/U9MM6c-2-nnJkHxyCjRcnMHcWVWV1cWRRXf_S8MW.ttf', fontWeight: 500 },
+    { src: 'https://fonts.gstatic.com/s/sairasemicondensed/v15/U9MM6c-2-nnJkHxyCjRcnMHcWVWV1cWRRXe3TcMW.ttf', fontWeight: 700 },
+  ]);
+  registerFamily('CatalogBody', [
+    { src: 'https://fonts.gstatic.com/s/inter/v20/UcCO3FwrK3iLTeHuS_nVMrMxCp50SjIw2boKoduKmMEVuLyfMZg.ttf', fontWeight: 400 },
+    { src: 'https://fonts.gstatic.com/s/inter/v20/UcCO3FwrK3iLTeHuS_nVMrMxCp50SjIw2boKoduKmMEVuFuYMZg.ttf', fontWeight: 700 },
   ]);
 
   try {

@@ -141,19 +141,51 @@ export const downloadCatalogPdf = async (
   const brand: ProviderBranding = options.brand || legacyToBrand(options);
 
   // 1) prepare image COPIES (never the stored asset) — chunked + dedup + skip-broken.
-  const { bySource, brokenCount } = await prepareAllImages(products, options.onProgress);
+  let bySource: Map<string, string | null>;
+  let brokenCount = 0;
+  try {
+    const r = await prepareAllImages(products, options.onProgress);
+    bySource = r.bySource;
+    brokenCount = r.brokenCount;
+    console.warn(`[PDF] images prepared: ${bySource.size} (${brokenCount} broken)`);
+  } catch (e) {
+    console.error('[PDF] image prep failed:', e);
+    bySource = new Map();
+  }
 
   // 2) ensure fonts + dynamic-import the renderer (lazy chunk).
-  const { ensurePdfFonts } = await import('./pdf/pdfFonts');
-  await ensurePdfFonts();
+  try {
+    const { ensurePdfFonts } = await import('./pdf/pdfFonts');
+    await ensurePdfFonts();
+    console.warn('[PDF] fonts registered');
+  } catch (e) {
+    console.error('[PDF] font init failed (continuing with built-in Helvetica):', e);
+  }
   const { buildCatalogDocument, SKIN_BY_ID } = await import('./pdf/templates/catalogLayout');
   const skin = SKIN_BY_ID[brand.templateId];
   const docEl = buildCatalogDocument({ brand, products, images: { bySource } }, skin);
+  console.warn('[PDF] document built, templateId:', brand.templateId);
 
-  // 3) render to blob via the renderer's pdf() API.
+  // 3) render to blob via the renderer's renderToBlob() (browser-safe API,
+  // instead of pdf().toBlob() which sometimes hangs on Promise.all of font
+  // registration).
   const renderer = await import('@react-pdf/renderer');
   options.onProgress?.((products.length || 0), products.length || 0, 'render');
-  const blob: Blob = await (renderer as any).pdf(docEl).toBlob();
+  let blob: Blob;
+  try {
+    // renderToBlob was added in @react-pdf/renderer v3+ as the public browser-side
+    // entry; bumping to v4 kept it. If unavailable, fall back to pdf().toBlob().
+    const renderToBlob = (renderer as any).renderToBlob;
+    if (typeof renderToBlob === 'function') {
+      blob = await renderToBlob(docEl);
+    } else {
+      blob = await (renderer as any).pdf(docEl).toBlob();
+    }
+    console.warn(`[PDF] blob ready: ${blob.size} bytes`);
+  } catch (e) {
+    console.error('[PDF] render-to-blob failed:', e);
+    throw e;
+  }
 
   // 4) surface broken-image count to caller (after success, never fatal).
   if (brokenCount > 0) {

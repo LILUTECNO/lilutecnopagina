@@ -234,8 +234,9 @@ const MasterAdminDashboard: React.FC = () => {
       });
       toast.success('El catálogo completo fue generado.');
     } catch (error) {
-      console.error(error);
-      toast.error('No fue posible generar el catálogo PDF.');
+      console.error('[PDF] admin catalog error:', error);
+      const msg = error instanceof Error ? error.message : String(error);
+      toast.error(`No fue posible generar el catálogo: ${msg}`);
     } finally {
       setDownloadingCatalog(false);
       setCatalogProgress(null);

@@ -174,8 +174,9 @@ const ProviderDashboard: React.FC = () => {
       });
       toast.success('Tu catálogo PDF se descargó con los datos actualizados.');
     } catch (error) {
-      console.error(error);
-      toast.error('No fue posible generar el catálogo. Intenta nuevamente.');
+      console.error('[PDF] catalog error:', error);
+      const msg = error instanceof Error ? error.message : String(error);
+      toast.error(`No fue posible generar el catálogo: ${msg}`);
     } finally {
       setDownloadingCatalog(false);
       setCatalogProgress(null);
