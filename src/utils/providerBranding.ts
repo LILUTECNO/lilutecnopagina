@@ -119,19 +119,35 @@ export const normalizeProviderBranding = (raw: UserState | null | undefined): Pr
 };
 
 /**
- * Strip falsy contact fields before persisting (Firestore prefers undefined over '').
+ * Clean up branding object before persisting to Firestore.
+ * Omits falsy/empty fields so no `undefined` properties are sent,
+ * which Firestore strictly forbids in updateDoc/setDoc.
  */
 export const cleanupBrandingForSave = (b: ProviderBranding): ProviderBranding => {
-  const contact: BrandContact = { ...b.contact };
-  (Object.keys(contact) as (keyof BrandContact)[]).forEach((k) => {
-    if (!contact[k]) (contact as Record<string, unknown>)[k] = undefined;
-  });
-  return {
+  const contact: BrandContact = {};
+  if (b.contact) {
+    if (b.contact.web?.trim()) contact.web = b.contact.web.trim();
+    if (b.contact.email?.trim()) contact.email = b.contact.email.trim();
+    if (b.contact.phone?.trim()) contact.phone = b.contact.phone.trim();
+    if (b.contact.whatsapp?.trim()) contact.whatsapp = b.contact.whatsapp.trim();
+    if (b.contact.address?.trim()) contact.address = b.contact.address.trim();
+  }
+
+  const cleaned: ProviderBranding = {
     templateId: b.templateId,
-    palette: b.palette,
-    logoUrl: b.logoUrl || undefined,
-    companyName: b.companyName || undefined,
-    tagline: b.tagline || undefined,
-    contact,
+    palette: {
+      primary: b.palette.primary,
+      secondary: b.palette.secondary,
+      accent: b.palette.accent,
+      ink: b.palette.ink,
+      paper: b.palette.paper,
+    },
   };
+
+  if (b.logoUrl?.trim()) cleaned.logoUrl = b.logoUrl.trim();
+  if (b.companyName?.trim()) cleaned.companyName = b.companyName.trim();
+  if (b.tagline?.trim()) cleaned.tagline = b.tagline.trim();
+  if (Object.keys(contact).length > 0) cleaned.contact = contact;
+
+  return cleaned;
 };

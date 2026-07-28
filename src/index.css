@@ -766,7 +766,7 @@ input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; marg
 [data-theme="light"] .admin-shell .text-amber-500,
 [data-theme="light"] .admin-shell .text-amber-700{ color:var(--accent-amber); }
 [data-theme="light"] .admin-shell .text-green-600,
-[data-theme="light"] .admin-shell .text-green-700{ color:color-mix(in srgb, #16a34a 92%, #000); }
+[data-theme="light"] .admin-shell .text-green-700{ color:#0f7234; }
 [data-theme="light"] .admin-shell .text-red-400,
 [data-theme="light"] .admin-shell .text-red-600,
 [data-theme="light"] .admin-shell .text-red-700{ color:#E11D48; }
@@ -817,7 +817,7 @@ input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; marg
 [data-theme="dark"] .admin-shell .bg-red-500\/90,
 [data-theme="dark"] .admin-shell .bg-red-500\/80,
 [data-theme="dark"] .admin-shell .hover\:bg-red-500:hover{
-  background:#FF5C7A; color:#fff;
+  background:#C43460; color:#fff;
 }
 [data-theme="light"] .admin-shell .bg-red-500\/90,
 [data-theme="light"] .admin-shell .bg-red-500\/80,
@@ -921,7 +921,7 @@ input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; marg
 [data-theme="light"] .seller-shell .text-red-400,
 [data-theme="light"] .seller-shell .text-red-600{ color:#E11D48; }
 [data-theme="light"] .seller-shell .text-green-500,
-[data-theme="light"] .seller-shell .text-green-600{ color:color-mix(in srgb, #16a34a 92%, #000); }
+[data-theme="light"] .seller-shell .text-green-600{ color:#0f7234; }
 [data-theme="light"] .seller-shell .text-blue-500{ color:#1D4ED8; }
 [data-theme="light"] .seller-shell .text-cyan-600{ color:var(--accent-cyan); }
 [data-theme="light"] .seller-shell .text-luxury-black,
@@ -1088,7 +1088,7 @@ input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; marg
 [data-theme="light"] .partner-shell .bg-black\/80{ background:rgba(20,20,30,.5); }
 
 /* Estado semántico (rojo=eliminar/error) en dark red neón, light rojo marcado */
-[data-theme="dark"] .partner-shell .bg-red-500{ background:#FF5C7A; color:#fff; }
+[data-theme="dark"] .partner-shell .bg-red-500{ background:#C43460; color:#fff; }
 [data-theme="light"] .partner-shell .bg-red-500{ background:#E11D48; color:#fff; }
 [data-theme="light"] .partner-shell .hover\:bg-red-400\/10:hover{ background:rgba(225,29,72,.10); }
 [data-theme="light"] .partner-shell .hover\:bg-orange-400\/10:hover{ background:rgba(249,115,22,.10); }

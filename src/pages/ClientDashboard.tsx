@@ -78,12 +78,12 @@ const ClientDashboard: React.FC = () => {
             <ArrowLeft className="h-5 w-5 stroke-1" />
           </Link>
           <img src={logo} alt="Lilu Tecno" className="h-9 w-9 rounded-full object-contain ring-1 ring-white/10" />
-          <span className="font-montserrat text-lg font-black tracking-[0.16em] text-white">
+          <span className="wordmark font-montserrat text-lg font-black tracking-[0.16em] text-white">
             MI CUENTA
           </span>
         </div>
         <div className="flex items-center space-x-6">
-          <span className="text-[10px] uppercase tracking-[0.2em] text-orange-400 font-semibold">
+          <span className="role-label text-[10px] uppercase tracking-[0.2em] text-orange-400 font-semibold">
             CLIENTE PREMIUM
           </span>
           <button onClick={handleLogout} className="p-2 text-slate-400 hover:text-red-400 transition-all duration-300 hover:scale-105 rounded-lg hover:bg-white/5" title="Cerrar Sesión">

@@ -16,21 +16,37 @@
   --border-1:rgba(255,255,255,.9); --border-2:rgba(120,90,200,.14);
   --border-glow-from:#22D3EE; --border-glow-to:#A855F7;
   --text-0:#14141E; --text-1:#3A3A4A; --text-muted:#5E5E72;
-  --accent-cyan:#14B8C4; --accent-cyan-soft:rgba(20,184,196,.12);
+  --accent-cyan:#0E7E89; --accent-cyan-soft:rgba(14,126,137,.12);
   --accent-violet:#8B3FE0; --accent-violet-soft:rgba(139,63,224,.12);
-  --accent-amber:#F97316; --accent-amber-soft:rgba(249,115,22,.14);
-  --cta-from:#FF7A18; --cta-to:#9B3FE0;
-  --star:#F59E0B; --price:#14141E; --price-old:#9A9AA8;
+  --accent-amber:#B45309; --accent-amber-soft:rgba(180,83,9,.12);
+  --cta-from:#B8490A; --cta-to:#7B2FC0;
+  --star:#B45309; --price:#14141E; --price-old:#6E6E80;
   --grid-line:rgba(120,90,200,.06);
   --glow-1:rgba(139,63,224,.16); --glow-2:rgba(20,184,196,.14);
   --shadow-card:0 18px 50px rgba(80,60,160,.14), 0 2px 8px rgba(80,60,160,.06);
   --shadow-glow:0 0 30px rgba(139,63,224,.12), 0 0 40px rgba(20,184,196,.10);
-  --ring-focus:0 0 0 2px #FFFFFF, 0 0 0 4px #14B8C4, 0 0 14px rgba(20,184,196,.4);
+  --ring-focus:0 0 0 2px #FFFFFF, 0 0 0 4px #0E7E89, 0 0 14px rgba(14,126,137,.4);
   --radius-card:22px; --radius-cta:12px; --radius-field:12px;
 
   --font-legacy-sans:"Inter","Plus Jakarta Sans",system-ui,sans-serif;
   --font-legacy-montserrat:"Montserrat",var(--font-body);
   --font-legacy-serif:"Playfair Display",var(--font-display);
+
+  /* Wordmark family (FIX 3 tier-1 & tier-2) — shared by both themes. */
+  --wordmark-family:"Cinzel", var(--font-display);
+}
+
+/* ---- LIGHT gold ramp (AA on white) — additive tokens only ---- */
+[data-theme="light"]{
+  --gold-1:#7A4F10; --gold-2:#9A6A12; --gold-3:#B07D1E; --gold-4:#8A5A12; --gold-5:#6E4510;
+  --gold-solid:#8A5A12;   /* AA-safe gold for small text on white */
+  --gold-glow:rgba(176,125,30,.25);
+}
+/* ---- DARK bright metallic gold (high contrast on near-black) ---- */
+[data-theme="dark"]{
+  --gold-1:#FBE7A2; --gold-2:#E8C061; --gold-3:#C8922E; --gold-4:#F2D27A; --gold-5:#A9791A;
+  --gold-solid:#E8C061;   /* bright gold for small text on dark */
+  --gold-glow:rgba(232,192,97,.35);
 }
 
 /* ---- LIGHT (TRON DAY) explícito: hereda :root; sin overrides extra ---- */
@@ -45,7 +61,7 @@
   --text-0:#EAFBFF; --text-1:#C7C9E0; --text-muted:#8E90AC;
   --accent-cyan:#2FE6FF; --accent-cyan-soft:rgba(47,230,255,.14);
   --accent-violet:#B06BFF; --accent-violet-soft:rgba(176,107,255,.16);
-  --accent-amber:#FF9A3D; --accent-amber-soft:rgba(255,154,61,.16);
+  --accent-amber:#FFB65C; --accent-amber-soft:rgba(255,182,92,.16);
   --cta-from:#FF8A1E; --cta-to:#A64BE0;
   --star:#FFA53D; --price:#62E6FF; --price-old:#7E8099;
   --grid-line:rgba(120,150,255,.06);
@@ -223,7 +239,8 @@ a{ color:var(--accent-cyan); }
 ::-webkit-scrollbar-thumb:hover { background:var(--accent-violet); }
 html{ scrollbar-width:thin; scrollbar-color:color-mix(in srgb, var(--accent-violet) 50%, transparent) transparent; scroll-behavior:smooth; }
 
-::selection{ background:var(--accent-amber); color:#fff; }
+::selection{ background:var(--accent-violet); color:#fff; }
+[data-theme="dark"] ::selection{ background:#9B3FE0; color:#fff; }
 
 /* ---- Transición de tema (acotada a color/fondo/sombra/borde) ---- */
 body, .surface, .surface-glow, .btn-cta, .btn-ghost, .badge,
@@ -237,10 +254,213 @@ body, html{ background-attachment:scroll; -webkit-overflow-scrolling:touch; }
 /* ---- WhatsApp: color de marca, de-!important para coexistir con tokens ----
    (Petición: NO pintar de cyan/violet el botón de WhatsApp; se conserva verde de marca.) */
 a[href*="wa.me"], a[href*="whatsapp"]{
-  background:#25D366; color:#fff; border-radius:9999px;
+  background:#25D366; color:#0A0A0A; border-radius:9999px;
   box-shadow:0 8px 24px rgba(37,211,102,.35), 0 4px 12px rgba(0,0,0,.15);
 }
-a[href*="wa.me"] svg, a[href*="whatsapp"] svg{ fill:#fff; color:#fff; }
+a[href*="wa.me"] svg, a[href*="whatsapp"] svg{ fill:#0A0A0A; color:#0A0A0A; }
+[data-theme="dark"] a[href*="wa.me"],
+[data-theme="dark"] a[href*="whatsapp"]{
+  background:#0C763D; color:#fff;
+}
+[data-theme="dark"] a[href*="wa.me"] svg,
+[data-theme="dark"] a[href*="whatsapp"] svg{ fill:#fff; color:#fff; }
+
+/* ============================================================
+   PATCH (FixScale-2025-07): TRON-LIGHT contrast fixes — LIGHT-only.
+   DARK rules untouched; dark style unchanged pixel-by-pixel.
+   Selectors confirmed via DOM inspection of Header.tsx /
+   ProductPage.tsx (see diff comment block in commit message).
+   ============================================================ */
+
+/* ---- FIX 1 — theme toggle (shared .tron-toggle across storefront + 3 dashboards) ----
+   DOM verified: <button class="tron-toggle"><Sun class="tron-toggle__icon tron-toggle__icon--sun"/><Moon class="tron-toggle__icon tron-toggle__icon--moon"/></button>.
+   Both SVGs always rendered; no conditional. Lucide Sun/Moon inherit currentColor for stroke/fill.
+   Inline style="width/height:size" lives on the button — not overridden (would need !important, forbidden). */
+.tron-toggle{
+  display:inline-grid; place-items:center;
+  border-radius:12px; border:1px solid var(--border-2);
+  background:var(--surface-2); cursor:pointer;
+  transition:background-color .2s ease, border-color .2s ease, color .2s ease, transform .15s ease;
+}
+.tron-toggle:hover{ transform:translateY(-1px); border-color:var(--accent-cyan); }
+.tron-toggle:focus-visible{ outline:none; box-shadow:var(--ring-focus); }
+.tron-toggle svg, .tron-toggle svg *{ fill:currentColor; stroke:currentColor; }
+/* Show only the active icon; the inactive one is hidden (not faded). */
+.tron-toggle__icon{ display:none; }
+[data-theme="light"] .tron-toggle{ color:#C77A0B; }
+[data-theme="light"] .tron-toggle__icon--sun{ display:block; }
+[data-theme="dark"]  .tron-toggle{ color:var(--accent-cyan); }
+[data-theme="dark"]  .tron-toggle__icon--moon{ display:block; }
+
+/* ---- FIX 2A — section headings: white-on-light must become dark ----
+   DOM verified: storefront + dashboards render <h1 class="font-montserrat ... text-white"> and
+   <h2 class="font-montserrat ... text-white"> because page roots set text-white. Killing only
+   the WHITE color utility on these headings in LIGHT; no gradient/clip currently in use
+   (grep for background-clip:text in .css returned none) — rule still neutralizes any future clip. */
+[data-theme="light"] h1.font-montserrat.text-white,
+[data-theme="light"] h2.font-montserrat.text-white,
+[data-theme="light"] h3.font-montserrat.text-white{
+  color:var(--text-0);
+  -webkit-text-fill-color:var(--text-0);
+  background:none;
+  text-shadow:none;
+}
+
+/* ---- FIX 2B — secondary nav (storefront Header <nav>) ----
+   DOM verified: <nav class="hidden ... md:block"><div class="container ... flex ... gap-1"><button>...</button>...</div></nav>.
+   Step 0 inspection: NO conditional className reflects active filter; every nav button has a FIXED
+   Tailwind text-color utility (Ofertas = text-orange-400 literally always, others = text-slate-300).
+   Case (iii) — filter-active is NOT in the DOM. → TODO(tron) deferral below; we do NOT couple to state.
+   Selector: header > nav covers only the storefront Header secondary nav (dashboards have no <nav>). */
+[data-theme="light"] header > nav button,
+[data-theme="light"] header > nav a{
+  color:var(--text-1); font-weight:600; letter-spacing:.04em;
+}
+[data-theme="light"] header > nav button:hover,
+[data-theme="light"] header > nav a:hover{
+  color:var(--text-0);
+}
+/* Route-active "Cómo funciona" (only real page) — additive data-active + aria-current in Header.tsx */
+[data-theme="light"] header > nav button[data-active="true"]{
+  color:var(--accent-amber); font-weight:700;
+  box-shadow:inset 0 -2px 0 var(--accent-amber);   /* non-color cue: underline */
+}
+[data-theme="dark"]  header > nav button[data-active="true"]{
+  color:var(--accent-amber); font-weight:700;
+  box-shadow:inset 0 -2px 0 var(--accent-amber);
+}
+/* TODO(tron): filter-active is not reflected in the DOM (case iii-step0);
+   add aria-pressed + an active class in a SEPARATE task to restore the
+   active-filter cue accessibly. Do NOT couple to searchTerm/category here. */
+
+/* ---- FIX 4 — product detail panel (LIGHT only) ----
+   DOM verified (ProductPage.tsx): the "ugly grey-purple" comes from the outer
+   <section class="mx-auto w-full max-w-6xl rounded-3xl border border-white/10 bg-[#130a20]/75 p-5 shadow-2xl backdrop-blur-xl sm:p-8">.
+   The bg is a TAILWIND ARBITRARY-VALUE UTILITY (class-based, NOT inline style) → NO !important needed.
+   Target via [class*="bg-[#130a20]/75"] (escape arbitrary value chars). Specificity (0,1,1) beats the utility (0,1,0). */
+[data-theme="light"] [class*="bg-\[\#130a20\]\/75"]{
+  background:var(--surface-1);
+  border:1px solid var(--border-2);
+  border-radius:var(--radius-card);
+  box-shadow:var(--shadow-card);
+  color:var(--text-0);
+}
+@supports (backdrop-filter: blur(1px)){
+  [data-theme="light"] [class*="bg-\[\#130a20\]\/75"]{ backdrop-filter:blur(14px) saturate(140%); }
+}
+/* Force the text content of the panel to tokens in LIGHT (it inherits text-white from page root). */
+[data-theme="light"] [class*="bg-\[\#130a20\]\/75"] h1,
+[data-theme="light"] [class*="bg-\[\#130a20\]\/75"] h2{
+  color:var(--text-0); -webkit-text-fill-color:var(--text-0);
+}
+[data-theme="light"] [class*="bg-\[\#130a20\]\/75"] p,
+[data-theme="light"] [class*="bg-\[\#130a20\]\/75"] .desc,
+[data-theme="light"] [class*="bg-\[\#130a20\]\/75"] ul{ color:var(--text-1); }
+/* Eyebrows & price keep amber accent. Sidebar <details> features list also gets text-1. */
+[data-theme="light"] [class*="bg-\[\#130a20\]\/75"] .text-slate-400,
+[data-theme="light"] [class*="bg-\[\#130a20\]\/75"] .text-slate-300{
+  color:var(--text-1);
+}
+[data-theme="light"] [class*="bg-\[\#130a20\]\/75"] .text-orange-400{
+  color:var(--accent-amber); -webkit-text-fill-color:var(--accent-amber);
+}
+/* Internal <details> block in LIGHT: its white/10 + bg-white/[.03] utilities become light tokens. */
+[data-theme="light"] [class*="bg-\[\#130a20\]\/75"] details{
+  background:var(--surface-2);
+  border-color:var(--border-2);
+  color:var(--text-1);
+}
+/* Stock badge (in-stock green) — AA-safe in light: dark-green text on green-soft bg. */
+[data-theme="light"] [class*="bg-\[\#130a20\]\/75"] .bg-emerald-400\/10,
+[data-theme="light"] [class*="bg-\[\#130a20\]\/75"] .text-emerald-300{
+  background:rgba(16,185,129,.12); color:#047857; -webkit-text-fill-color:#047857;
+  border-color:rgba(16,185,129,.4);
+}
+[data-theme="light"] [class*="bg-\[\#130a20\]\/75"] .text-emerald-300 svg{ color:#047857; }
+
+/* ============================================================
+   FIX 3 — Luxury gold wordmark + role labels + user greeting
+   (BOTH themes; unified across every panel).
+   Tier-1 .wordmark: metallic gold gradient + Cinzel, large (brand name).
+   Tier-2 .role-label: solid AA-safe gold + Cinzel, small (PANEL DE ...).
+   Mid   .user-greeting: solid AA-safe gold + Cinzel, sentence case.
+   ============================================================ */
+
+/* ---- Tier 1: wordmark (metallic gold gradient + clip text + glow) ---- */
+.wordmark{
+  font-family:var(--wordmark-family);
+  font-weight:700; text-transform:uppercase;
+  letter-spacing:.08em; line-height:1.05;
+  background:linear-gradient(180deg,
+    var(--gold-1) 0%, var(--gold-2) 24%, var(--gold-3) 50%,
+    var(--gold-4) 72%, var(--gold-5) 100%);
+  -webkit-background-clip:text; background-clip:text;
+  color:transparent; -webkit-text-fill-color:transparent;
+  filter:drop-shadow(0 1px 0 var(--gold-glow));   /* glow survives clip */
+}
+/* Fallback if clip unsupported -> solid AA-safe gold */
+@supports not ((-webkit-background-clip:text) or (background-clip:text)){
+  .wordmark{ color:var(--gold-solid); -webkit-text-fill-color:var(--gold-solid); background:none; }
+}
+/* Responsive safeguard: Cinzel's wider metrics could overflow at 360px; never cut text. */
+@media (max-width: 380px){
+  .wordmark{ letter-spacing:.06em; }
+}
+
+/* ---- Tier 2: role labels (solid AA-safe gold + Cinzel, NO gradient) ----
+   Specificity (0,1,1) beats single Tailwind utilities (text-orange-400 / text-luxury-gold = 0,1,0)
+   without !important. MasterAdmin's text-luxury-gold + tracking-wider + text-xs are neutralized
+   from CSS here — the span keeps them in the DOM but they no longer win. */
+span.role-label{
+  font-family:var(--wordmark-family);
+  font-weight:600;
+  text-transform:uppercase;
+  letter-spacing:.10em;
+  font-size:inherit;          /* let container size; do not hardcode 10px/xs */
+  color:var(--gold-solid);
+  -webkit-text-fill-color:var(--gold-solid);
+  background:none;
+  display:inline-flex; align-items:center;
+}
+/* Optional luxury cue: thin gold divider before the label (matches .user-greeting tick) */
+span.role-label::before{
+  content:""; display:inline-block; width:14px; height:2px;
+  margin-right:.5em; vertical-align:middle;
+  background:linear-gradient(90deg,var(--gold-2),var(--gold-4));
+  border-radius:2px;
+}
+
+/* ---- Mid: user greeting (sentence-case gold + Cinzel; NOT a role label) ----
+   Dropshipper header greeting "Hola, {name}" gets the same brand DNA as role-labels
+   (gold + Cinzel + the gold tick) but NOT the uppercase inscription typography:
+   greetings are warm prose, not tags. Specificity (0,1,1) beats the kept
+   .uppercase / .text-orange-400 (0,1,0) utilities — no !important needed. */
+span.user-greeting{
+  font-family:var(--wordmark-family);
+  font-weight:600;
+  text-transform:none;        /* KEY: respect greeting case, do NOT shout */
+  letter-spacing:.02em;
+  color:var(--gold-solid);
+  -webkit-text-fill-color:var(--gold-solid);
+  background:none;
+  display:inline-flex; align-items:center; gap:.5em;
+}
+span.user-greeting::before{
+  content:""; display:inline-block; width:14px; height:2px;
+  border-radius:2px;
+  background:linear-gradient(90deg,var(--gold-2),var(--gold-4));
+}
+/* Two-tone variant is OPT-IN via child .greet-hi / .greet-name spans
+   (we do NOT add those in this commit — variant (b) uniform gold only).
+   These rules are inert until a future additive TSX change opts in. */
+span.user-greeting .greet-hi{
+  color:color-mix(in srgb, var(--gold-solid) 62%, var(--text-1));
+  -webkit-text-fill-color:color-mix(in srgb, var(--gold-solid) 62%, var(--text-1));
+  font-weight:500;
+}
+span.user-greeting .greet-name{
+  color:var(--gold-solid); -webkit-text-fill-color:var(--gold-solid); font-weight:700;
+}
 
 @media (prefers-reduced-motion: reduce){
   *{ transition:none !important; animation:none !important; }

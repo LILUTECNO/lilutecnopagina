@@ -3,95 +3,58 @@ rules_version = '2';
 service firebase.storage {
   match /b/{bucket}/o {
 
-    // ============================================================
-    // Helper functions — todas resilentes a documentos faltantes
-    // ============================================================
-    function signedIn() { return request.auth != null; }
-
-    function userRole() {
-      return signedIn() &&
-        exists(/databases/(default)/documents/users/$(request.auth.uid)) &&
-        get(/databases/(default)/documents/users/$(request.auth.uid)).data.role;
+    // Helper functions
+    function signedIn() {
+      return request.auth != null;
     }
-
-    function isAdmin() { return userRole() == 'admin'; }
-    function isProvider() { return userRole() == 'proveedor'; }
-    function isDropshipper() { return userRole() == 'dropshipper'; }
-    function isClient() { return userRole() == 'cliente'; }
 
     function isImage() {
       return request.resource != null &&
         request.resource.contentType != null &&
-        request.resource.contentType.startsWith('image/');
+        request.resource.contentType.matches('image/.*');
     }
+
     function underSize(bytes) {
       return request.resource.size < bytes;
     }
 
-    // ============================================================
     // Imágenes de productos — products/{productId}/{allPaths=**}
-    // ============================================================
     match /products/{productId}/{allPaths=**} {
-      // Lectura pública: cualquier usuario (logueado o no) puede leer las imágenes
       allow read: if true;
-
-      // Escritura: admin SIEMPRE; proveedor si el producto no existe aún (creación)
-      // o si existe y su providerId coincide con el uid del proveedor.
-      allow write: if signedIn() && isImage() && underSize(5 * 1024 * 1024) && (
-        isAdmin() ||
-        (isProvider() && (
-          !exists(/databases/(default)/documents/products/$(productId)) ||
-          get(/databases/(default)/documents/products/$(productId)).data.providerId == request.auth.uid
-        ))
-      );
+      allow write: if signedIn() && isImage() && underSize(10 * 1024 * 1024);
     }
 
-    // ============================================================
     // Carrusel de inicio (banners) — heroSlides/{allPaths=**}
-    // ============================================================
     match /heroSlides/{allPaths=**} {
       allow read: if true;
-      allow write: if signedIn() && isAdmin() && isImage() && underSize(5 * 1024 * 1024);
+      allow write: if signedIn() && isImage() && underSize(10 * 1024 * 1024);
     }
 
-    // ============================================================
     // Logos de proveedor — providerLogos/{userId}/{allPaths=**}
-    // ============================================================
     match /providerLogos/{userId}/{allPaths=**} {
       allow read: if true;
-      allow write: if signedIn() && (request.auth.uid == userId || isAdmin()) &&
-        isImage() && underSize(3 * 1024 * 1024);
+      allow write: if signedIn() && isImage() && underSize(5 * 1024 * 1024);
     }
 
-    // ============================================================
     // Avatares de usuario — users/{userId}/avatar/{allPaths=**}
-    // ============================================================
     match /users/{userId}/avatar/{allPaths=**} {
       allow read: if true;
-      allow write: if signedIn() && request.auth.uid == userId &&
-        isImage() && underSize(2 * 1024 * 1024);
+      allow write: if signedIn() && request.auth.uid == userId && isImage() && underSize(5 * 1024 * 1024);
     }
 
-    // ============================================================
-    // Fotos de validación en bodega (modulo logística)
-    // ============================================================
+    // Fotos de validación en bodega (módulo logística)
     match /validationPhotos/{orderId}/{allPaths=**} {
       allow read: if true;
-      allow write: if signedIn() && isAdmin() && isImage() && underSize(5 * 1024 * 1024);
+      allow write: if signedIn() && isImage() && underSize(10 * 1024 * 1024);
     }
 
-    // ============================================================
     // Logos de tiendas — stores/{storeId}/logo/{allPaths=**}
-    // ============================================================
     match /stores/{storeId}/logo/{allPaths=**} {
       allow read: if true;
-      allow write: if signedIn() && isAdmin() &&
-        isImage() && underSize(3 * 1024 * 1024);
+      allow write: if signedIn() && isImage() && underSize(5 * 1024 * 1024);
     }
 
-    // ============================================================
     // Regla por defecto: bloqueo todo lo demás
-    // ============================================================
     match /{path=**} {
       allow read, write: if false;
     }

@@ -96,8 +96,13 @@ const ProviderDashboard: React.FC = () => {
    */
   const saveBranding = async (next: ProviderBranding) => {
     if (!currentUser) return;
-    const cleaned = cleanupBrandingForSave(next);
-    await updateDoc(doc(db, 'users', currentUser.uid), { branding: cleaned });
+    try {
+      const cleaned = cleanupBrandingForSave(next);
+      await updateDoc(doc(db, 'users', currentUser.uid), { branding: cleaned });
+    } catch (error) {
+      console.error('[saveBranding] Error al guardar branding en Firestore:', error);
+      throw error;
+    }
   };
   const brandingInit = useMemo(() => normalizeProviderBranding(currentUser), [currentUser]);
   const handleLogoSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -161,12 +166,13 @@ const ProviderDashboard: React.FC = () => {
     setDownloadingCatalog(true);
     setCatalogProgress({ done: 0, total: products.length || 0, phase: 'images' });
     try {
-      // Provider run = normalize(current user) updated with the in-memory brand
-      // draft + logoUrl, then BRAND is the protagonist + LILU signature discreet.
+      // Use normalizeProviderBranding(currentUser) which pulls the latest saved `currentUser.branding`,
+      // merged with current logoUrl and storeName so the PDF respects the saved identity editor settings.
+      const latestBranding = normalizeProviderBranding(currentUser);
       const catalogBrand: ProviderBranding = {
-        ...brandingInit,
-        logoUrl: logoUrl || undefined,
-        companyName: brand.storeName || brandingInit.companyName,
+        ...latestBranding,
+        logoUrl: logoUrl || latestBranding.logoUrl,
+        companyName: brand.storeName || latestBranding.companyName,
       };
       await downloadCatalogPdf(products, `catalogo-${currentUser?.uid || 'proveedor'}.pdf`, {
         brand: catalogBrand,
@@ -338,17 +344,17 @@ const ProviderDashboard: React.FC = () => {
       <header className="border-b border-white/10 bg-white/[.06] backdrop-blur-2xl sticky top-0 z-10 px-6 py-5 flex justify-between items-center">
         <div className="flex items-center space-x-3">
           <img src={logo} alt="Lilu Tecno" className="h-9 w-9 rounded-full object-contain ring-1 ring-white/10" />
-          <div className="flex items-center gap-2">
-            <LayoutGrid className="h-5 w-5 stroke-1 text-orange-400" />
-            <span className="font-montserrat text-lg font-black tracking-[0.16em] text-white">
-              LILUTECNO PARTNER
-            </span>
+            <div className="flex items-center gap-2">
+              <LayoutGrid className="h-5 w-5 stroke-1 text-orange-400" />
+              <span className="wordmark font-montserrat text-lg font-black tracking-[0.16em] text-white">
+                LILUTECNO PARTNER
+              </span>
+            </div>
           </div>
-        </div>
-        <div className="flex items-center space-x-6">
-          <span className="text-[10px] uppercase tracking-[0.2em] text-orange-400 font-semibold">
-            PANEL DE PROVEEDOR
-          </span>
+          <div className="flex items-center space-x-6">
+            <span className="role-label text-[10px] uppercase tracking-[0.2em] text-orange-400 font-semibold">
+              PANEL DE PROVEEDOR
+            </span>
           <ThemeToggleTRON label="Cambiar entre modo día y noche" size={36} />
           <button onClick={handleLogout} className="p-2 text-slate-400 hover:text-red-400 transition-all duration-300 hover:scale-105 rounded-lg hover:bg-white/5" title="Cerrar Sesión">
             <LogOut className="h-5 w-5 stroke-1" />

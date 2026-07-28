@@ -12,6 +12,21 @@
  * G4 (fonts: CatalogDisplay / CatalogBody) + G5 (PdfImage takes a dataURL).
  */
 
+// --- PDF-RUNTIME POLYFILL (D1) ---------------------------------------------
+// MUST run before any `@react-pdf/renderer` import in this (lazy) chunk.
+// @react-pdf/fontkit reads font/image bytes via Node's `Buffer`. In the browser
+// there is no Buffer, so a base64->bytes shift yields a mis-sized buffer and
+// fontkit throws `RangeError: Offset is outside the bounds of the DataView`
+// while parsing glyph metrics (-> same stack reported in the owner's F12 log,
+// preceded by "Buffer is not defined"). The two errors are coupled: the
+// RangeError is a SYMPTOM of the missing Buffer. Provide them here, at the top
+// of the lazy chunk entry, so visitors who never open the PDF catalog pay zero
+// cost in the main bundle (G1: lazy-load the renderer).
+import { Buffer } from 'buffer';
+if (typeof globalThis.Buffer === 'undefined') globalThis.Buffer = Buffer;
+if (typeof globalThis.process === 'undefined')
+  (globalThis as unknown as { process: Record<string, unknown> }).process = { env: {} };
+
 import { Document, Page, Image as PdfImage, StyleSheet, Text, View } from '@react-pdf/renderer';
 import type { FC } from 'react';
 import type { Product } from '../../../types';

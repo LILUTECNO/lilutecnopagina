@@ -4,7 +4,7 @@ const LoadingScreen: React.FC = () => {
   return (
     <div className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-luxury-off-white">
       <div className="flex flex-col items-center space-y-6">
-        <span className="font-montserrat text-4xl font-black tracking-[0.2em] text-luxury-black animate-pulse">
+        <span className="wordmark font-montserrat text-4xl font-black tracking-[0.2em] text-luxury-black animate-pulse">
           LILUTECNO
         </span>
         <div className="h-5 w-5 animate-spin rounded-full border border-luxury-gold border-t-transparent"></div>

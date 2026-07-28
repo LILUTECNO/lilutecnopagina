@@ -70,7 +70,7 @@ const LoginPage = () => {
     <div className="auth-page flex min-h-screen items-center justify-center px-4 py-8 sm:px-6 sm:py-12">
       <div className="auth-card w-full max-w-md space-y-7 rounded-2xl p-6 sm:p-8">
         <div className="text-center">
-          <Link to="/" className="font-montserrat text-2xl font-black tracking-[0.2em] text-white sm:text-3xl">
+          <Link to="/" className="wordmark font-montserrat text-2xl font-black tracking-[0.2em] text-white sm:text-3xl">
             LILUTECNO
           </Link>
           <p className="mt-4 text-[9px] font-semibold uppercase tracking-[0.32em] text-orange-400">Mi cuenta</p>

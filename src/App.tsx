@@ -196,7 +196,7 @@ export const App: React.FC = () => {
 
       {/* ── Footer ── */}
       <footer className="border-t border-white/10 bg-black/20 backdrop-blur-md text-center py-12 px-4 space-y-2">
-        <span className="font-montserrat text-sm font-bold tracking-[0.35em] text-white">
+        <span className="wordmark font-montserrat text-sm font-bold tracking-[0.35em] text-white">
           LILUTECNO
         </span>
         <p className="text-[10px] text-slate-400 uppercase tracking-[0.2em] font-light">

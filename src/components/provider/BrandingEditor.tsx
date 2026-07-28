@@ -273,7 +273,8 @@ const BrandingEditor: React.FC<BrandingEditorProps> = ({
     try {
       await onSave(draft);
       toast.success('Identidad de marca guardada.');
-    } catch {
+    } catch (err) {
+      console.error('[BrandingEditor] Error al guardar identidad:', err);
       toast.error('No fue posible guardar la identidad de marca.');
     } finally {
       setSaving(false);
